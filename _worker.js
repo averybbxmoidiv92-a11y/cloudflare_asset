@@ -6126,9 +6126,12 @@ async function nginx() {
             --shadow-sm: 0 1px 3px rgba(44, 82, 130, 0.06), 0 1px 2px rgba(44, 82, 130, 0.04);
             --shadow-md: 0 8px 30px rgba(44, 82, 130, 0.10), 0 4px 12px rgba(44, 82, 130, 0.06);
             --shadow-lg: 0 20px 50px rgba(44, 82, 130, 0.13), 0 8px 20px rgba(44, 82, 130, 0.07);
+            --shadow-btn: 0 2px 8px rgba(44, 82, 130, 0.10), 0 1px 3px rgba(44, 82, 130, 0.06);
+            --shadow-btn-hover: 0 6px 20px rgba(44, 82, 130, 0.16), 0 2px 6px rgba(44, 82, 130, 0.10);
             --radius: 20px;
             --radius-sm: 12px;
-            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
+            --transition-flip: 0.7s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
 
         * {
@@ -6194,15 +6197,29 @@ async function nginx() {
             background-size: 12px 12px;
         }
 
-        /* 主卡片 */
+        /* 主卡片容器 - 3D透视 */
         .card-wrapper {
             position: relative;
             z-index: 1;
             width: 100%;
             max-width: 440px;
+            perspective: 1200px;
         }
 
-        .card {
+        /* 3D翻转容器 */
+        .card-flipper {
+            position: relative;
+            width: 100%;
+            transform-style: preserve-3d;
+            transition: transform var(--transition-flip);
+            will-change: transform;
+        }
+        .card-flipper.flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* 卡片面通用样式 */
+        .card-face {
             background: var(--card-bg);
             border-radius: var(--radius);
             padding: 44px 36px 36px;
@@ -6210,11 +6227,32 @@ async function nginx() {
             text-align: center;
             position: relative;
             overflow: hidden;
-            transition: var(--transition);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            width: 100%;
+        }
+
+        /* 正面 */
+        .card-front {
+            /* 在flipper内部正常定位 */
+        }
+
+        /* 背面 */
+        .card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100%;
         }
 
         /* 卡片顶部蓝色装饰条 */
-        .card::before {
+        .card-face::before {
             content: '';
             position: absolute;
             top: 0;
@@ -6225,10 +6263,11 @@ async function nginx() {
             border-radius: 0 0 6px 6px;
             background: linear-gradient(90deg, var(--primary-light), var(--primary), var(--primary-dark));
             opacity: 0.85;
+            z-index: 1;
         }
 
         /* 微妙的内部光晕 */
-        .card::after {
+        .card-face::after {
             content: '';
             position: absolute;
             top: -80px;
@@ -6239,19 +6278,19 @@ async function nginx() {
             background: radial-gradient(ellipse, rgba(59, 108, 180, 0.04) 0%, transparent 70%);
             pointer-events: none;
             border-radius: 50%;
+            z-index: 0;
         }
 
+        /* ========== 正面样式 ========== */
         /* 头像容器 */
         .avatar-container {
             position: relative;
             display: inline-block;
             margin-bottom: 20px;
-            z-index: 1;
+            z-index: 2;
             width: 90px;
             height: 90px;
         }
-
-        /* 头像（默认字母与图片共用） */
         .avatar {
             width: 90px;
             height: 90px;
@@ -6269,15 +6308,12 @@ async function nginx() {
             transition: var(--transition);
             position: relative;
             object-fit: cover;
-            /* 图片模式时使用 */
             overflow: hidden;
         }
         .avatar:hover {
             box-shadow: 0 12px 36px rgba(44, 82, 130, 0.32), 0 0 0 10px var(--primary-soft);
             transform: translateY(-2px);
         }
-
-        /* 当头像为图片时，覆盖文字样式 */
         .avatar.avatar-image {
             background: transparent;
             font-size: 0;
@@ -6292,8 +6328,6 @@ async function nginx() {
             object-fit: cover;
             display: block;
         }
-
-        /* 头像外圈虚线装饰 */
         .avatar-ring {
             position: absolute;
             top: -16px;
@@ -6314,14 +6348,13 @@ async function nginx() {
             }
         }
 
-        /* 姓名 */
         .name {
             font-size: 28px;
             font-weight: 700;
             color: var(--text);
             letter-spacing: 0.5px;
             margin-bottom: 4px;
-            z-index: 1;
+            z-index: 2;
             position: relative;
         }
         .role-tag {
@@ -6334,11 +6367,9 @@ async function nginx() {
             border-radius: 20px;
             letter-spacing: 0.4px;
             margin-bottom: 24px;
-            z-index: 1;
+            z-index: 2;
             position: relative;
         }
-
-        /* 分隔线 */
         .divider {
             width: 50px;
             height: 2px;
@@ -6346,16 +6377,16 @@ async function nginx() {
             margin: 0 auto 22px;
             border-radius: 1px;
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
-        /* 联系信息区域 */
+        /* 联系信息 */
         .contact-list {
             list-style: none;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            z-index: 1;
+            z-index: 2;
             position: relative;
         }
         .contact-item {
@@ -6384,8 +6415,6 @@ async function nginx() {
             transition: 0.1s ease;
             background: #eef4f9;
         }
-
-        /* 复制成功提示 */
         .contact-item .copy-toast {
             position: absolute;
             right: 16px;
@@ -6407,8 +6436,6 @@ async function nginx() {
             opacity: 1;
             transform: translateY(-50%) translateX(-4px);
         }
-
-        /* 图标 */
         .contact-icon {
             width: 40px;
             height: 40px;
@@ -6431,8 +6458,6 @@ async function nginx() {
         .contact-item:hover .contact-icon {
             transform: scale(1.06);
         }
-
-        /* SVG图标样式 */
         .contact-icon svg {
             width: 20px;
             height: 20px;
@@ -6447,7 +6472,6 @@ async function nginx() {
             stroke: none;
             stroke-width: 0;
         }
-
         .contact-info {
             flex: 1;
             min-width: 0;
@@ -6470,8 +6494,6 @@ async function nginx() {
         .contact-item:hover .contact-value {
             color: var(--primary-dark);
         }
-
-        /* 复制提示小字 */
         .copy-hint {
             font-size: 10px;
             color: #bcc8d6;
@@ -6484,36 +6506,139 @@ async function nginx() {
             color: #99aabb;
         }
 
-        /* 底部社交行 */
-        .social-row {
+        /* ========== 背面样式 ========== */
+        .back-content {
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            gap: 16px;
-            margin-top: 24px;
-            z-index: 1;
+            z-index: 2;
             position: relative;
+            width: 100%;
+            padding: 10px 0;
         }
-        .social-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #d5dfeb;
+        .back-logo-container {
+            margin-bottom: 18px;
+            transition: all 0.4s ease;
+        }
+        .back-logo-container.hidden {
+            display: none;
+        }
+        .back-logo {
+            width: 160px;
+            height: auto;
+            display: block;
+            object-fit: contain;
             transition: var(--transition);
         }
-        .social-dot.active {
-            background: var(--primary);
-            box-shadow: 0 0 0 4px rgba(59, 108, 180, 0.12);
+        .back-school-name {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            line-height: 1.3;
         }
-        .social-dot:hover {
-            background: var(--primary-light);
-            box-shadow: 0 0 0 6px rgba(59, 108, 180, 0.10);
-            transform: scale(1.4);
+        .back-info-divider {
+            width: 36px;
+            height: 2px;
+            background: var(--border);
+            border-radius: 1px;
+            margin: 4px auto 14px;
+        }
+        .back-detail {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+        .back-detail:last-child {
+            margin-bottom: 0;
+        }
+        .back-detail-label {
+            font-weight: 600;
+            color: var(--primary);
         }
 
-        /* 页脚 */
+        /* 背面内容整体居中（无logo时） */
+        .back-content.no-logo .back-school-name {
+            margin-top: 8px;
+        }
+        .back-content.no-logo .back-info-divider {
+            margin-top: 8px;
+        }
+
+        /* ========== 翻转按钮 ========== */
+        .flip-btn-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+            position: relative;
+            z-index: 3;
+        }
+        .flip-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1.5px solid #e5ecf3;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-btn);
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            color: var(--primary);
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+        .flip-btn:hover {
+            box-shadow: var(--shadow-btn-hover);
+            transform: translateY(-2px) scale(1.04);
+            border-color: #d0dde8;
+            color: var(--primary-dark);
+        }
+        .flip-btn:active {
+            transform: scale(0.94);
+            transition: 0.12s ease;
+            box-shadow: var(--shadow-sm);
+            background: #f6f9fc;
+        }
+        .flip-btn svg {
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            transition: transform 0.35s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        .card-flipper.flipped~.flip-btn-wrapper .flip-btn svg {
+            transform: rotate(180deg);
+        }
+
+        /* 按钮提示文字 */
+        .flip-btn-tooltip {
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            letter-spacing: 0.4px;
+        }
+        .flip-btn:hover .flip-btn-tooltip {
+            opacity: 1;
+        }
+
+        /* ========== 页脚 ========== */
         .footer-note {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 16px;
             font-size: 11px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
@@ -6525,9 +6650,9 @@ async function nginx() {
             font-weight: 600;
         }
 
-        /* 响应式 */
+        /* ========== 响应式 ========== */
         @media (max-width: 480px) {
-            .card {
+            .card-face {
                 padding: 36px 20px 28px;
                 border-radius: 16px;
             }
@@ -6574,6 +6699,29 @@ async function nginx() {
                 right: 10px;
                 padding: 3px 8px;
             }
+            .back-logo {
+                width: 120px;
+            }
+            .back-school-name {
+                font-size: 16px;
+            }
+            .back-detail {
+                font-size: 13px;
+            }
+            .back-logo-container {
+                margin-bottom: 12px;
+            }
+            .flip-btn {
+                width: 40px;
+                height: 40px;
+            }
+            .flip-btn svg {
+                width: 18px;
+                height: 18px;
+            }
+            .flip-btn-wrapper {
+                margin-top: 14px;
+            }
             .bg-decoration.circle-1 {
                 width: 70px;
                 height: 70px;
@@ -6596,7 +6744,7 @@ async function nginx() {
         }
 
         @media (max-width: 360px) {
-            .card {
+            .card-face {
                 padding: 28px 14px 22px;
             }
             .contact-value {
@@ -6623,6 +6771,23 @@ async function nginx() {
                 width: calc(100% + 20px);
                 height: calc(100% + 20px);
             }
+            .back-logo {
+                width: 100px;
+            }
+            .back-school-name {
+                font-size: 15px;
+            }
+            .back-detail {
+                font-size: 12px;
+            }
+            .flip-btn {
+                width: 36px;
+                height: 36px;
+            }
+            .flip-btn svg {
+                width: 16px;
+                height: 16px;
+            }
         }
     </style>
 </head>
@@ -6636,63 +6801,75 @@ async function nginx() {
 
     <!-- 名片卡片 -->
     <div class="card-wrapper">
-        <div class="card">
-            <!-- 头像 -->
-            <div class="avatar-container">
-                <div class="avatar-ring"></div>
-                <div class="avatar" id="avatar" title="WendySG">W</div>
+        <!-- 3D翻转容器 -->
+        <div class="card-flipper" id="cardFlipper">
+            <!-- 正面 -->
+            <div class="card-face card-front">
+                <div class="avatar-container">
+                    <div class="avatar-ring"></div>
+                    <div class="avatar" id="avatar" title="WendySG">W</div>
+                </div>
+                <h1 class="name">WendySG</h1>
+                <div class="role-tag">个人名片</div>
+                <div class="divider"></div>
+                <ul class="contact-list">
+                    <li class="contact-item" data-copy="averybbxmoidiv92@gmail.com" title="点击复制邮箱地址">
+                        <div class="contact-icon icon-email">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="4" width="20" height="16" rx="2" />
+                                <path d="M22 4L12 13L2 4" />
+                            </svg>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-label">邮箱</div>
+                            <div class="contact-value">averybbxmoidiv92@gmail.com <span class="copy-hint">点击复制</span></div>
+                        </div>
+                        <span class="copy-toast">✓ 已复制</span>
+                    </li>
+                    <li class="contact-item" data-copy="3631928084" title="点击复制QQ号">
+                        <div class="contact-icon icon-qq">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C9.5 2 7 3.5 6.5 6C5.5 7 4.5 8.5 4.5 11C4.5 14 6 16 7.5 17C7.5 17.5 7 18.5 6.5 20C6 21 6.5 22 8 22C9 22 10 21 10.5 20C11 19.5 11.5 18.5 12 18C12.5 18.5 13 19.5 13.5 20C14 21 15 22 16 22C17.5 22 18 21 17.5 20C17 18.5 16.5 17.5 16.5 17C18 16 19.5 14 19.5 11C19.5 8.5 18.5 7 17.5 6C17 3.5 14.5 2 12 2Z" />
+                                <circle cx="9.5" cy="10" r="1.2" fill="white" />
+                                <circle cx="14.5" cy="10" r="1.2" fill="white" />
+                            </svg>
+                        </div>
+                        <div class="contact-info">
+                            <div class="contact-label">QQ</div>
+                            <div class="contact-value">3631928084 <span class="copy-hint">点击复制</span></div>
+                        </div>
+                        <span class="copy-toast">✓ 已复制</span>
+                    </li>
+                </ul>
             </div>
 
-            <!-- 姓名 -->
-            <h1 class="name">WendySG</h1>
-            <div class="role-tag">个人名片</div>
-
-            <!-- 分隔线 -->
-            <div class="divider"></div>
-
-            <!-- 联系方式列表 -->
-            <ul class="contact-list">
-                <!-- 邮箱 -->
-                <li class="contact-item" data-copy="averybbxmoidiv92@gmail.com" title="点击复制邮箱地址">
-                    <div class="contact-icon icon-email">
-                        <!-- 信封图标 -->
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="2" y="4" width="20" height="16" rx="2" />
-                            <path d="M22 4L12 13L2 4" />
-                        </svg>
+            <!-- 背面 -->
+            <div class="card-face card-back">
+                <div class="back-content" id="backContent">
+                    <!-- 校徽容器 -->
+                    <div class="back-logo-container" id="backLogoContainer">
+                        <img class="back-logo" id="backLogo" src="https://althgot.de5.net/static/school_logo.png" alt="校徽">
                     </div>
-                    <div class="contact-info">
-                        <div class="contact-label">邮箱</div>
-                        <div class="contact-value">averybbxmoidiv92@gmail.com <span class="copy-hint">点击复制</span></div>
-                    </div>
-                    <span class="copy-toast">✓ 已复制</span>
-                </li>
-
-                <!-- QQ -->
-                <li class="contact-item" data-copy="3631928084" title="点击复制QQ号">
-                    <div class="contact-icon icon-qq">
-                        <!-- QQ企鹅图标 -->
-                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2C9.5 2 7 3.5 6.5 6C5.5 7 4.5 8.5 4.5 11C4.5 14 6 16 7.5 17C7.5 17.5 7 18.5 6.5 20C6 21 6.5 22 8 22C9 22 10 21 10.5 20C11 19.5 11.5 18.5 12 18C12.5 18.5 13 19.5 13.5 20C14 21 15 22 16 22C17.5 22 18 21 17.5 20C17 18.5 16.5 17.5 16.5 17C18 16 19.5 14 19.5 11C19.5 8.5 18.5 7 17.5 6C17 3.5 14.5 2 12 2Z" />
-                            <circle cx="9.5" cy="10" r="1.2" fill="white" />
-                            <circle cx="14.5" cy="10" r="1.2" fill="white" />
-                        </svg>
-                    </div>
-                    <div class="contact-info">
-                        <div class="contact-label">QQ</div>
-                        <div class="contact-value">3631928084 <span class="copy-hint">点击复制</span></div>
-                    </div>
-                    <span class="copy-toast">✓ 已复制</span>
-                </li>
-            </ul>
-
-            <!-- 底部装饰点 -->
-            <div class="social-row">
-                <span class="social-dot active" title="在线"></span>
-                <span class="social-dot"></span>
-                <span class="social-dot"></span>
-                <span class="social-dot"></span>
+                    <!-- 学校信息 -->
+                    <h2 class="back-school-name">福建农业职业技术学院</h2>
+                    <div class="back-info-divider"></div>
+                    <p class="back-detail"><span class="back-detail-label">入学年份</span>：2026年</p>
+                    <p class="back-detail"><span class="back-detail-label">专业</span>：工程造价</p>
+                </div>
             </div>
+        </div>
+
+        <!-- 翻转按钮 -->
+        <div class="flip-btn-wrapper">
+            <button class="flip-btn" id="flipBtn" title="翻转名片" aria-label="翻转名片">
+                <!-- 翻转图标 -->
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" stroke-dasharray="42 14" stroke-linecap="round" />
+                    <polyline points="7,8 5,11 8,11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="17,16 19,13 16,13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="flip-btn-tooltip">翻转</span>
+            </button>
         </div>
 
         <!-- 页脚 -->
@@ -6704,13 +6881,10 @@ async function nginx() {
             // ========== 头像加载逻辑 ==========
             const avatarEl = document.getElementById('avatar');
             const avatarImageUrl = 'https://althgot.de5.net/static/avatar.jpg';
-            // 加上时间戳避免缓存导致跨域或304问题？不需要，只是检测可访问性。
-            // 但为避免某些CDN缓存策略，可以加一个随机参数，不过这里简单检测即可。
 
             function setDefaultAvatar() {
-                // 恢复为默认字母头像
                 avatarEl.classList.remove('avatar-image');
-                avatarEl.innerHTML = ''; // 清空可能的img子元素
+                avatarEl.innerHTML = '';
                 avatarEl.textContent = 'W';
                 avatarEl.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
                 avatarEl.style.color = '#ffffff';
@@ -6721,7 +6895,6 @@ async function nginx() {
             }
 
             function setImageAvatar(imgSrc) {
-                // 设置为图片头像
                 avatarEl.classList.add('avatar-image');
                 avatarEl.textContent = '';
                 avatarEl.style.background = 'transparent';
@@ -6732,11 +6905,9 @@ async function nginx() {
                 img.src = imgSrc;
                 img.alt = 'WendySG 头像';
                 img.onload = function() {
-                    // 图片加载成功，确保样式正确
                     avatarEl.classList.add('avatar-image');
                 };
                 img.onerror = function() {
-                    // 如果已经设置图片但加载失败，回退默认
                     setDefaultAvatar();
                 };
                 avatarEl.innerHTML = '';
@@ -6746,22 +6917,10 @@ async function nginx() {
 
             function checkAvatar() {
                 const testImg = new Image();
-                testImg.onload = function() {
-                    // 图片可访问，替换头像
-                    setImageAvatar(avatarImageUrl);
-                };
-                testImg.onerror = function() {
-                    // 图片不可访问，保持默认头像
-                    setDefaultAvatar();
-                };
-                // 开始加载测试图片
-                testImg.src = avatarImageUrl;
-                // 设置超时（5秒），如果服务器无响应则视为不可访问
                 const timeout = setTimeout(() => {
-                    testImg.src = ''; // 取消加载
+                    testImg.src = '';
                     setDefaultAvatar();
                 }, 5000);
-                // 如果加载完成，清除超时
                 testImg.onload = function() {
                     clearTimeout(timeout);
                     setImageAvatar(avatarImageUrl);
@@ -6769,32 +6928,98 @@ async function nginx() {
                 testImg.onerror = function() {
                     clearTimeout(timeout);
                     setDefaultAvatar();
+                };
+                testImg.src = avatarImageUrl;
+            }
+
+            checkAvatar();
+
+            // ========== 背面校徽加载逻辑 ==========
+            const backLogoContainer = document.getElementById('backLogoContainer');
+            const backLogo = document.getElementById('backLogo');
+            const backContent = document.getElementById('backContent');
+            const schoolLogoUrl = 'https://althgot.de5.net/static/school_logo.png';
+
+            function hideLogoContainer() {
+                if (backLogoContainer) {
+                    backLogoContainer.classList.add('hidden');
+                }
+                if (backContent) {
+                    backContent.classList.add('no-logo');
+                }
+            }
+
+            function showLogoContainer() {
+                if (backLogoContainer) {
+                    backLogoContainer.classList.remove('hidden');
+                }
+                if (backContent) {
+                    backContent.classList.remove('no-logo');
+                }
+            }
+
+            function checkSchoolLogo() {
+                const testImg = new Image();
+                const timeout = setTimeout(() => {
+                    testImg.src = '';
+                    hideLogoContainer();
+                }, 5000);
+                testImg.onload = function() {
+                    clearTimeout(timeout);
+                    showLogoContainer();
+                    // 确保logo的src正确
+                    if (backLogo && backLogo.src !== schoolLogoUrl) {
+                        backLogo.src = schoolLogoUrl;
+                    }
+                };
+                testImg.onerror = function() {
+                    clearTimeout(timeout);
+                    hideLogoContainer();
+                };
+                testImg.src = schoolLogoUrl;
+            }
+
+            // 同时监听backLogo的加载情况
+            if (backLogo) {
+                backLogo.onerror = function() {
+                    hideLogoContainer();
+                };
+                backLogo.onload = function() {
+                    showLogoContainer();
                 };
             }
 
-            // 页面加载后立即检测
-            checkAvatar();
+            checkSchoolLogo();
+
+            // ========== 翻转功能 ==========
+            const flipBtn = document.getElementById('flipBtn');
+            const cardFlipper = document.getElementById('cardFlipper');
+
+            if (flipBtn && cardFlipper) {
+                flipBtn.addEventListener('click', function() {
+                    cardFlipper.classList.toggle('flipped');
+                });
+            }
 
             // ========== 复制功能 ==========
             const contactItems = document.querySelectorAll('.contact-item');
 
             contactItems.forEach(item => {
-                item.addEventListener('click', function() {
+                item.addEventListener('click', function(e) {
+                    // 防止事件冒泡影响翻转
+                    e.stopPropagation();
                     const textToCopy = this.getAttribute('data-copy');
                     const toast = this.querySelector('.copy-toast');
 
                     if (!textToCopy) return;
 
-                    // 使用 Clipboard API
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(textToCopy).then(() => {
                             showToast(toast);
                         }).catch(() => {
-                            // 降级方案
                             fallbackCopy(textToCopy, toast);
                         });
                     } else {
-                        // 降级方案
                         fallbackCopy(textToCopy, toast);
                     }
                 });
@@ -6822,11 +7047,9 @@ async function nginx() {
 
             function showToast(toast) {
                 if (!toast) return;
-                // 移除之前的动画
                 toast.classList.remove('show');
-                void toast.offsetWidth; // 强制回流
+                void toast.offsetWidth;
                 toast.classList.add('show');
-                // 1.8秒后自动隐藏
                 clearTimeout(toast._timeout);
                 toast._timeout = setTimeout(() => {
                     toast.classList.remove('show');
