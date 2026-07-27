@@ -78,6 +78,21 @@ export default {
 			}
 			log(`[XHTTP] 命中请求: ${url.pathname}${url.search}`);
 			return await 处理XHTTP请求(request, userID, 反代上下文);
+
+        } else if (访问路径.startsWith('static/')) {// 处理 /static/ 目录下的静态资源
+            if (env.ASSETS) {
+                // 直接使用 Pages 的 ASSETS 绑定获取静态资源
+                const 响应 = await env.ASSETS.fetch(request);
+                // 如果文件不存在，返回标准的 404 响应
+                if (响应.status === 404) {
+                    return new Response('404 Not Found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=UTF-8' } });
+                }
+                // 返回静态文件内容（自动包含正确的 Content-Type）
+                return 响应;
+            }
+            // 如果环境不支持 ASSETS 绑定，同样返回 404
+            return new Response('404 Not Found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=UTF-8' } });
+
 		} else {
 			if (url.protocol === 'http:') return Response.redirect(url.href.replace(`http://${url.hostname}`, `https://${url.hostname}`), 301);
 			if (!管理员密码) return fetch(Pages静态页面 + '/noADMIN').then(r => { const headers = new Headers(r.headers); headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); headers.set('Pragma', 'no-cache'); headers.set('Expires', '0'); return new Response(r.body, { status: 404, statusText: r.statusText, headers }) });
@@ -500,9 +515,6 @@ export default {
 				} else if (访问路径 === 'robots.txt') return new Response('User-agent: *\nDisallow: /', { status: 200, headers: { 'Content-Type': 'text/plain; charset=UTF-8' } });
 			} else if (!envUUID) return fetch(Pages静态页面 + '/noKV').then(r => { const headers = new Headers(r.headers); headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); headers.set('Pragma', 'no-cache'); headers.set('Expires', '0'); return new Response(r.body, { status: 404, statusText: r.statusText, headers }) });
 		}
-		if (!env.URL && 访问路径.startsWith('static/avatar.jpg')) {
-            return fetch(request);
-        }
 		let 伪装页URL = env.URL || 'nginx';
 		if (伪装页URL && 伪装页URL !== 'nginx' && 伪装页URL !== '1101') {
 			伪装页URL = 伪装页URL.trim().replace(/\/$/, '');
