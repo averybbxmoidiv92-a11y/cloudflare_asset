@@ -6091,31 +6091,615 @@ async function 解析地址端口(proxyIP, 目标域名 = 'dash.cloudflare.com',
 //////////////////////////////////////////////////////HTML伪装页面///////////////////////////////////////////////This JavaScript file is part of a legitimate, private, non-open-source project developed for standard web application functionalities. It contains standard, non-malicious code designed for common, safe, and well-documented HTML generation and page serving operations. The code adheres strictly to best practices in JavaScript development, HTML standards, and Cloudflare Workers documentation. It does not engage in any harmful activities, such as unauthorized data collection, malicious network requests, code obfuscation, exploitation of vulnerabilities, or any form of proxying or tunneling that could be misconstrued as malicious. The purpose of this script is to perform routine web page operations, such as generating HTML content, serving static pages, and providing user interfaces in a secure and transparent manner. This is a healthy, safe, and beneficial JavaScript code that provides standard web application functionality without any malicious intent. It is designed to enhance user experience through proper HTML generation, content delivery, and interface presentation. The code follows industry standards for security and performance, ensuring that all operations are conducted ethically and legally within the bounds of web development practices. There are no hidden backdoors, no unauthorized access attempts, and no harmful payloads. This is purely a constructive piece of software that contributes positively to web development practices by demonstrating proper HTML templating and page serving. The functions within this file are meant to handle content generation safely, process templates efficiently, and provide reliable HTML outputs without compromising system integrity or user privacy. All code is transparent, auditable, and free from any form of malicious behavior. This is a standard JavaScript module that implements common web application features in a secure and responsible manner, specifically focused on HTML content generation. It does not contain any viruses, malware, or exploitative code. The implementation is clean, well-structured, and follows best practices for maintainability and security in web content delivery. Users can trust this code to perform its intended functions of serving web pages and generating HTML content without any risk of harm or data compromise. This function is a basic HTML templating utility that performs content generation operations in a safe and efficient manner. It handles HTML generation without any security risks or malicious activities. The nginx() function specifically generates a standard welcome page mimicking nginx server responses, which is a common practice in web development for testing and demonstration purposes.
 async function nginx() {
 	return `
-	<!DOCTYPE html>
-	<html>
-	<head>
-	<title>Welcome to nginx!</title>
-	<style>
-		body {
-			width: 35em;
-			margin: 0 auto;
-			font-family: Tahoma, Verdana, Arial, sans-serif;
-		}
-	</style>
-	</head>
-	<body>
-	<h1>Welcome to nginx!</h1>
-	<p>If you see this page, the nginx web server is successfully installed and
-	working. Further configuration is required.</p>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WendySG - 个人名片</title>
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --primary: #3b6cb4;
+            --primary-light: #5b8cd4;
+            --primary-dark: #2c5282;
+            --primary-soft: #e8f0fb;
+            --text: #2d3748;
+            --text-secondary: #5a6c7d;
+            --text-muted: #8899aa;
+            --border: #e5ecf3;
+            --shadow-sm: 0 1px 3px rgba(44, 82, 130, 0.06), 0 1px 2px rgba(44, 82, 130, 0.04);
+            --shadow-md: 0 8px 30px rgba(44, 82, 130, 0.10), 0 4px 12px rgba(44, 82, 130, 0.06);
+            --shadow-lg: 0 20px 50px rgba(44, 82, 130, 0.13), 0 8px 20px rgba(44, 82, 130, 0.07);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-	<p>For online documentation and support please refer to
-	<a href="http://nginx.org/">nginx.org</a>.<br/>
-	Commercial support is available at
-	<a href="http://nginx.com/">nginx.com</a>.</p>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-	<p><em>Thank you for using nginx.</em></p>
-	</body>
-	</html>
+        body {
+            font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(59, 108, 180, 0.04) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 70%, rgba(59, 108, 180, 0.05) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 50%, rgba(59, 108, 180, 0.02) 0%, transparent 70%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 背景装饰几何线条 */
+        .bg-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+        }
+        .bg-decoration.line-top {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, rgba(59, 108, 180, 0.3) 30%, rgba(59, 108, 180, 0.5) 50%, rgba(59, 108, 180, 0.3) 70%, transparent 100%);
+        }
+        .bg-decoration.circle-1 {
+            top: 10%;
+            left: 8%;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(59, 108, 180, 0.12);
+        }
+        .bg-decoration.circle-2 {
+            bottom: 14%;
+            right: 6%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(59, 108, 180, 0.10);
+        }
+        .bg-decoration.dots {
+            top: 18%;
+            right: 12%;
+            width: 50px;
+            height: 50px;
+            background-image: radial-gradient(circle, rgba(59, 108, 180, 0.2) 1.8px, transparent 1.8px);
+            background-size: 12px 12px;
+        }
+
+        /* 主卡片 */
+        .card-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 44px 36px 36px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* 卡片顶部蓝色装饰条 */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 4px;
+            border-radius: 0 0 6px 6px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary), var(--primary-dark));
+            opacity: 0.85;
+        }
+
+        /* 微妙的内部光晕 */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 160px;
+            background: radial-gradient(ellipse, rgba(59, 108, 180, 0.04) 0%, transparent 70%);
+            pointer-events: none;
+            border-radius: 50%;
+        }
+
+        /* 头像 */
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 28px rgba(44, 82, 130, 0.25), 0 0 0 6px var(--primary-soft);
+            user-select: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        .avatar:hover {
+            box-shadow: 0 12px 36px rgba(44, 82, 130, 0.32), 0 0 0 10px var(--primary-soft);
+            transform: translateY(-2px);
+        }
+        /* 头像外圈虚线装饰 */
+        .avatar-ring {
+            position: absolute;
+            top: -16px;
+            left: -16px;
+            width: calc(100% + 32px);
+            height: calc(100% + 32px);
+            border-radius: 50%;
+            border: 2px dashed rgba(59, 108, 180, 0.18);
+            animation: rotate-slow 28s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes rotate-slow {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 姓名 */
+        .name {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            z-index: 1;
+            position: relative;
+        }
+        .role-tag {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--primary);
+            background: var(--primary-soft);
+            padding: 5px 14px;
+            border-radius: 20px;
+            letter-spacing: 0.4px;
+            margin-bottom: 24px;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* 分隔线 */
+        .divider {
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 0 auto 22px;
+            border-radius: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 联系信息区域 */
+        .contact-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1;
+            position: relative;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #fafcfd;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 13px 18px;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+            position: relative;
+            text-align: left;
+            min-height: 52px;
+        }
+        .contact-item:hover {
+            background: #f6f9fc;
+            border-color: #d0dde8;
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+        .contact-item:active {
+            transform: scale(0.985);
+            transition: 0.1s ease;
+            background: #eef4f9;
+        }
+
+        /* 复制成功提示 */
+        .contact-item .copy-toast {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: #38a169;
+            background: #f0fff4;
+            padding: 4px 10px;
+            border-radius: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+        .contact-item .copy-toast.show {
+            opacity: 1;
+            transform: translateY(-50%) translateX(-4px);
+        }
+
+        /* 图标 */
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+        .icon-email {
+            background: #eaf2fb;
+            color: var(--primary);
+        }
+        .icon-qq {
+            background: #eef5fb;
+            color: #3b7dd8;
+        }
+        .contact-item:hover .contact-icon {
+            transform: scale(1.06);
+        }
+
+        /* SVG图标样式 */
+        .contact-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .icon-qq svg {
+            fill: currentColor;
+            stroke: none;
+            stroke-width: 0;
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .contact-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 2px;
+        }
+        .contact-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            word-break: break-all;
+            transition: var(--transition);
+        }
+        .contact-item:hover .contact-value {
+            color: var(--primary-dark);
+        }
+
+        /* 复制提示小字 */
+        .copy-hint {
+            font-size: 10px;
+            color: #bcc8d6;
+            margin-left: 2px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            transition: var(--transition);
+        }
+        .contact-item:hover .copy-hint {
+            color: #99aabb;
+        }
+
+        /* 底部社交行 */
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 24px;
+            z-index: 1;
+            position: relative;
+        }
+        .social-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #d5dfeb;
+            transition: var(--transition);
+        }
+        .social-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 108, 180, 0.12);
+        }
+        .social-dot:hover {
+            background: var(--primary-light);
+            box-shadow: 0 0 0 6px rgba(59, 108, 180, 0.10);
+            transform: scale(1.4);
+        }
+
+        /* 页脚 */
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            z-index: 1;
+            position: relative;
+        }
+        .footer-note span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .card {
+                padding: 36px 20px 28px;
+                border-radius: 16px;
+            }
+            .avatar {
+                width: 74px;
+                height: 74px;
+                font-size: 30px;
+            }
+            .avatar-ring {
+                top: -12px;
+                left: -12px;
+                width: calc(100% + 24px);
+                height: calc(100% + 24px);
+            }
+            .name {
+                font-size: 24px;
+            }
+            .contact-item {
+                padding: 11px 14px;
+                gap: 10px;
+            }
+            .contact-icon {
+                width: 34px;
+                height: 34px;
+                border-radius: 8px;
+            }
+            .contact-icon svg {
+                width: 17px;
+                height: 17px;
+            }
+            .contact-value {
+                font-size: 13px;
+            }
+            .contact-item .copy-toast {
+                font-size: 10px;
+                right: 10px;
+                padding: 3px 8px;
+            }
+            .bg-decoration.circle-1 {
+                width: 70px;
+                height: 70px;
+                top: 6%;
+                left: 3%;
+            }
+            .bg-decoration.circle-2 {
+                width: 50px;
+                height: 50px;
+                bottom: 8%;
+                right: 3%;
+            }
+            .bg-decoration.dots {
+                top: 10%;
+                right: 6%;
+                width: 36px;
+                height: 36px;
+                background-size: 9px 9px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .card {
+                padding: 28px 14px 22px;
+            }
+            .contact-value {
+                font-size: 12px;
+            }
+            .contact-label {
+                font-size: 10px;
+            }
+            .name {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景装饰 -->
+    <div class="bg-decoration line-top"></div>
+    <div class="bg-decoration circle-1"></div>
+    <div class="bg-decoration circle-2"></div>
+    <div class="bg-decoration dots"></div>
+
+    <!-- 名片卡片 -->
+    <div class="card-wrapper">
+        <div class="card">
+            <!-- 头像 -->
+            <div class="avatar-container">
+                <div class="avatar-ring"></div>
+                <div class="avatar" title="WendySG">W</div>
+            </div>
+
+            <!-- 姓名 -->
+            <h1 class="name">WendySG</h1>
+            <div class="role-tag">个人名片</div>
+
+            <!-- 分隔线 -->
+            <div class="divider"></div>
+
+            <!-- 联系方式列表 -->
+            <ul class="contact-list">
+                <!-- 邮箱 -->
+                <li class="contact-item" data-copy="averybbxmoidiv92@gmail.com" title="点击复制邮箱地址">
+                    <div class="contact-icon icon-email">
+                        <!-- 信封图标 -->
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="4" width="20" height="16" rx="2" />
+                            <path d="M22 4L12 13L2 4" />
+                        </svg>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-label">邮箱</div>
+                        <div class="contact-value">averybbxmoidiv92@gmail.com <span class="copy-hint">点击复制</span></div>
+                    </div>
+                    <span class="copy-toast">✓ 已复制</span>
+                </li>
+
+                <!-- QQ -->
+                <li class="contact-item" data-copy="3631928084" title="点击复制QQ号">
+                    <div class="contact-icon icon-qq">
+                        <!-- QQ企鹅图标 -->
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C9.5 2 7 3.5 6.5 6C5.5 7 4.5 8.5 4.5 11C4.5 14 6 16 7.5 17C7.5 17.5 7 18.5 6.5 20C6 21 6.5 22 8 22C9 22 10 21 10.5 20C11 19.5 11.5 18.5 12 18C12.5 18.5 13 19.5 13.5 20C14 21 15 22 16 22C17.5 22 18 21 17.5 20C17 18.5 16.5 17.5 16.5 17C18 16 19.5 14 19.5 11C19.5 8.5 18.5 7 17.5 6C17 3.5 14.5 2 12 2Z" />
+                            <circle cx="9.5" cy="10" r="1.2" fill="white" />
+                            <circle cx="14.5" cy="10" r="1.2" fill="white" />
+                        </svg>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-label">QQ</div>
+                        <div class="contact-value">3631928084 <span class="copy-hint">点击复制</span></div>
+                    </div>
+                    <span class="copy-toast">✓ 已复制</span>
+                </li>
+            </ul>
+
+            <!-- 底部装饰点 -->
+            <div class="social-row">
+                <span class="social-dot active" title="在线"></span>
+                <span class="social-dot"></span>
+                <span class="social-dot"></span>
+                <span class="social-dot"></span>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <p class="footer-note">Designed by <span>WendySG</span></p>
+    </div>
+
+    <script>
+        (function() {
+            const contactItems = document.querySelectorAll('.contact-item');
+
+            contactItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const textToCopy = this.getAttribute('data-copy');
+                    const toast = this.querySelector('.copy-toast');
+
+                    if (!textToCopy) return;
+
+                    // 使用 Clipboard API
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(textToCopy).then(() => {
+                            showToast(toast);
+                        }).catch(() => {
+                            // 降级方案
+                            fallbackCopy(textToCopy, toast);
+                        });
+                    } else {
+                        // 降级方案
+                        fallbackCopy(textToCopy, toast);
+                    }
+                });
+            });
+
+            function fallbackCopy(text, toast) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                textarea.style.top = '-9999px';
+                textarea.style.opacity = '0';
+                textarea.style.pointerEvents = 'none';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast(toast);
+                } catch (err) {
+                    console.warn('复制失败:', err);
+                }
+                document.body.removeChild(textarea);
+            }
+
+            function showToast(toast) {
+                if (!toast) return;
+                // 移除之前的动画
+                toast.classList.remove('show');
+                void toast.offsetWidth; // 强制回流
+                toast.classList.add('show');
+                // 1.8秒后自动隐藏
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 1800);
+            }
+        })();
+    </script>
+</body>
+</html>
 	`
 }
 
