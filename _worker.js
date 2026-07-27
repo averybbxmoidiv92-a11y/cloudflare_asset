@@ -7254,7 +7254,7 @@ async function nginx() {
                 const today = new Date();
                 const month = String(today.getMonth() + 1).padStart(2, '0');
                 const day = String(today.getDate()).padStart(2, '0');
-                return `${month}-${day}` === BIRTHDAY_DATE;
+                return (month + '-' + day) === BIRTHDAY_DATE;
             }
 
             let hatAnimationStarted = false;
@@ -7275,9 +7275,9 @@ async function nginx() {
                 const scaleRatio = avatarWidth / baseSize;
                 
                 // 更新了 top 和 left 的基准值
-                hatContainer.style.top = `${-35 * scaleRatio}px`;
-                hatContainer.style.left = `${22 * scaleRatio}px`;
-                hatContainer.style.width = `${avatarWidth * 0.7}px`;
+                hatContainer.style.top = \`${-35 * scaleRatio}px\`;
+                hatContainer.style.left = \`${22 * scaleRatio}px\`;
+                hatContainer.style.width = \`${avatarWidth * 0.7}px\`;
             }
 
             // 生成彩带特效
