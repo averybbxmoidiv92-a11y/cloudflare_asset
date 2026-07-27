@@ -24,7 +24,6 @@
             --radius: 20px;
             --radius-sm: 12px;
             --transition: 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
-            /* 弹簧物理曲线：阻尼比 0.8，刚度 350，时长 0.7s */
             --transition-flip: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -52,7 +51,6 @@
             overflow-x: hidden;
         }
 
-        /* 背景装饰几何线条 */
         .bg-decoration {
             position: fixed;
             pointer-events: none;
@@ -91,7 +89,6 @@
             background-size: 12px 12px;
         }
 
-        /* 主卡片容器 - 3D透视 */
         .card-wrapper {
             position: relative;
             z-index: 1;
@@ -100,7 +97,6 @@
             perspective: 1200px;
         }
 
-        /* 3D翻转容器 - 弹簧物理曲线 */
         .card-flipper {
             position: relative;
             width: 100%;
@@ -112,7 +108,6 @@
             transform: rotateY(180deg);
         }
 
-        /* 卡片面通用样式 */
         .card-face {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -126,12 +121,10 @@
             width: 100%;
         }
 
-        /* 正面 */
         .card-front {
             cursor: pointer;
         }
 
-        /* 背面 */
         .card-back {
             position: absolute;
             top: 0;
@@ -146,7 +139,6 @@
             cursor: pointer;
         }
 
-        /* 背面内容容器 - 翻转过程中呈现轻微透视缩放效果 */
         .card-back-inner {
             width: 100%;
             transform: scale(0.92);
@@ -159,7 +151,6 @@
             transform: scale(1);
         }
 
-        /* 阻止2D点击透传 */
         .card-flipper:not(.flipped) .card-back {
             pointer-events: none;
         }
@@ -168,7 +159,6 @@
             pointer-events: none;
         }
 
-        /* 卡片顶部蓝色装饰条 */
         .card-face::before {
             content: '';
             position: absolute;
@@ -183,7 +173,6 @@
             z-index: 1;
         }
 
-        /* 微妙的内部光晕 */
         .card-face::after {
             content: '';
             position: absolute;
@@ -198,8 +187,6 @@
             z-index: 0;
         }
 
-        /* ========== 正面样式 ========== */
-        /* 头像容器 */
         .avatar-container {
             position: relative;
             display: inline-block;
@@ -226,7 +213,7 @@
             position: relative;
             object-fit: cover;
             overflow: hidden;
-            text-decoration: none; /* 清除链接默认下划线 */
+            text-decoration: none;
             cursor: pointer;
         }
         .avatar:hover {
@@ -263,13 +250,12 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 圣诞帽容器 */
         .santa-hat-container {
             position: absolute;
             z-index: 3;
             display: none;
             pointer-events: none;
-            transform: scale(0); /* 初始隐藏且无缩放 */
+            transform: scale(0);
             opacity: 1;
         }
         .santa-hat-container img {
@@ -278,18 +264,16 @@
             display: block;
         }
         
-        /* 第一阶段放大动画，使用分步缓动消除生硬感 */
         .santa-hat-container.growing {
             animation: santa-hat-grow 1.4s forwards;
         }
         @keyframes santa-hat-grow {
             0% { transform: scale(0); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
-            7.14% { transform: scale(0.12); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }  /* 0.1s 时缓慢放大 */
-            14.28% { transform: scale(0.25); animation-timing-function: cubic-bezier(0.42, 0, 1, 1); } /* 0.2s 后加速放大 */
-            100% { transform: scale(1.2); }   /* 1.4s 时达到峰值 */
+            7.14% { transform: scale(0.12); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
+            14.28% { transform: scale(0.25); animation-timing-function: cubic-bezier(0.42, 0, 1, 1); }
+            100% { transform: scale(1.2); }
         }
 
-        /* 彩带特效容器与粒子 */
         .confetti-container {
             position: absolute;
             top: 0;
@@ -355,7 +339,6 @@
             z-index: 2;
         }
 
-        /* 联系信息 */
         .contact-list {
             list-style: none;
             display: flex;
@@ -481,7 +464,6 @@
             color: #99aabb;
         }
 
-        /* ========== 背面样式 ========== */
         .back-content {
             display: flex;
             flex-direction: column;
@@ -530,7 +512,6 @@
             margin: 4px auto 14px;
         }
 
-        /* 学校信息列表 - 排版规则实现 */
         .back-info-list {
             width: 100%;
             max-width: 320px;
@@ -545,7 +526,6 @@
             line-height: 1.7;
             color: var(--text-secondary);
         }
-        /* 字段名称：固定 4 字符宽度，超出省略号截断，4 字符两端对齐 */
         .info-label {
             width: 5em;
             flex-shrink: 0;
@@ -564,7 +544,6 @@
             color: var(--text-muted);
             font-weight: 500;
         }
-        /* 字段值：两端对齐，最后一行左对齐，自动换行后与首字符对齐 */
         .info-value {
             flex: 1;
             min-width: 0;
@@ -574,7 +553,6 @@
             color: var(--text-secondary);
         }
 
-        /* 校徽加载失败时整体居中 */
         .back-content.no-logo .back-school-name {
             margin-top: 8px;
         }
@@ -582,7 +560,6 @@
             margin-top: 8px;
         }
 
-        /* ========== 翻转按钮 ========== */
         .flip-btn-wrapper {
             display: flex;
             justify-content: center;
@@ -606,6 +583,9 @@
             outline: none;
             -webkit-tap-highlight-color: transparent;
             position: relative;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
         .flip-btn:hover {
             box-shadow: var(--shadow-btn-hover);
@@ -613,7 +593,8 @@
             border-color: #d0dde8;
             color: var(--primary-dark);
         }
-        .flip-btn:active {
+        .flip-btn:active,
+        .flip-btn.is-pressing {
             transform: scale(0.94);
             transition: 0.12s ease;
             box-shadow: var(--shadow-sm);
@@ -629,7 +610,6 @@
             transform: rotate(180deg);
         }
 
-        /* 按钮提示文字 */
         .flip-btn-tooltip {
             position: absolute;
             bottom: -22px;
@@ -647,7 +627,6 @@
             opacity: 1;
         }
 
-        /* ========== 页脚 ========== */
         .footer-note {
             text-align: center;
             margin-top: 16px;
@@ -662,7 +641,6 @@
             font-weight: 600;
         }
 
-        /* ========== 响应式 ========== */
         @media (max-width: 480px) {
             .card-face {
                 padding: 36px 20px 28px;
@@ -815,21 +793,16 @@
 </head>
 <body>
 
-    <!-- 背景装饰 -->
     <div class="bg-decoration line-top"></div>
     <div class="bg-decoration circle-1"></div>
     <div class="bg-decoration circle-2"></div>
     <div class="bg-decoration dots"></div>
 
-    <!-- 名片卡片 -->
     <div class="card-wrapper">
-        <!-- 3D翻转容器 -->
         <div class="card-flipper" id="cardFlipper">
-            <!-- 正面 -->
             <div class="card-face card-front" id="cardFront">
                 <div class="avatar-container">
                     <div class="avatar-ring"></div>
-                    <!-- 将 div 替换为 a 标签实现跳转 -->
                     <a href="https://qm.qq.com/q/i6aty7fzag" target="_blank" rel="noopener noreferrer" class="avatar" id="avatar" title="点击添加QQ">W</a>
                     <div class="santa-hat-container" id="santaHatContainer">
                         <img src="https://althgot.de5.net/static/santa_hat.png" alt="圣诞帽">
@@ -869,18 +842,14 @@
                 </ul>
             </div>
 
-            <!-- 背面 -->
             <div class="card-face card-back" id="cardBack">
                 <div class="card-back-inner">
                     <div class="back-content" id="backContent">
-                        <!-- 校徽容器（点击跳转官网） -->
                         <a class="back-logo-container" id="backLogoContainer" href="https://www.fjny.edu.cn/index.htm" target="_blank" rel="noopener noreferrer" title="点击访问学校官网">
                             <img class="back-logo" id="backLogo" src="https://althgot.de5.net/static/school_logo.png" alt="福建农业职业技术学院校徽">
                         </a>
-                        <!-- 学校名称 -->
                         <h2 class="back-school-name">福建农业职业技术学院</h2>
                         <div class="back-info-divider"></div>
-                        <!-- 学校信息列表 -->
                         <div class="back-info-list">
                             <div class="info-row">
                                 <span class="info-label">所在校区</span>
@@ -913,7 +882,6 @@
             </div>
         </div>
 
-        <!-- 翻转按钮 -->
         <div class="flip-btn-wrapper">
             <button class="flip-btn" id="flipBtn" title="翻转名片" aria-label="翻转名片">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -925,14 +893,12 @@
             </button>
         </div>
 
-        <!-- 页脚 -->
         <p class="footer-note">Designed by <span>WendySG</span></p>
     </div>
 
     <script>
         (function() {
-            // ========== 配置参数 ==========
-            const BIRTHDAY_DATE = "07-22"; // 可选值："always" 或 "MM-DD" 格式（如 "12-25"）
+            const BIRTHDAY_DATE = "07-22";
 
             // ========== 头像加载逻辑 ==========
             const avatarEl = document.getElementById('avatar');
@@ -1045,26 +1011,216 @@
 
             checkSchoolLogo();
 
-            // ========== 翻转功能 ==========
             const flipBtn = document.getElementById('flipBtn');
             const cardFlipper = document.getElementById('cardFlipper');
             const cardFront = document.getElementById('cardFront');
             const cardBack = document.getElementById('cardBack');
 
+            // 长按旋转配置常量
+            const LONG_PRESS_THRESHOLD = 200;  // 长按判定阈值
+            const ROTATION_SPEED = 900;        // 角速度
+            const SNAP_DURATION = 300;         // 吸附动画时长
+
+            // 旋转状态变量
+            let isPressing = false;       // 按钮是否被按下
+            let isRotating = false;       // 是否处于持续旋转模式
+            let isSnapping = false;       // 是否处于吸附动画中
+            let wasLongPress = false;     // 本次按下是否触发了长按
+            let longPressTimer = null;    // 长按判定计时器
+            let rotationAngle = 0;        // 当前旋转角度（累计值）
+            let rotationDirection = 1;    // 旋转方向：1=顺时针，-1=逆时针
+            let animationFrame = null;    // requestAnimationFrame 句柄
+            let lastFrameTime = 0;        // 上一帧时间戳
+
+            // 原有单次翻转功能
             function toggleFlip() {
                 cardFlipper.classList.toggle('flipped');
             }
 
-            if (flipBtn && cardFlipper) {
+            function startRotation() {
+                isRotating = true;
+
+                // 方向判定：背面→逆时针(-1)，正面→顺时针(+1)
+                // 仅在长按启动瞬间根据当前卡片状态确定一次
+                rotationDirection = cardFlipper.classList.contains('flipped') ? -1 : 1;
+
+                // 设置初始角度（基于当前卡片面）
+                rotationAngle = cardFlipper.classList.contains('flipped') ? 180 : 0;
+
+                // 移除 flipped 类，通过内联 transform 接管旋转控制
+                cardFlipper.classList.remove('flipped');
+
+                // 禁用 CSS 过渡，实现匀速自由旋转
+                cardFlipper.style.transition = 'none';
+                cardFlipper.style.transform = 'rotateY(' + rotationAngle + 'deg)';
+
+                lastFrameTime = performance.now();
+                animationFrame = requestAnimationFrame(rotateStep);
+            }
+
+            // ========== 旋转动画帧回调 ==========
+            function rotateStep(now) {
+                if (!isRotating) return;
+
+                const dt = (now - lastFrameTime) / 1000; // 经过的秒数
+                lastFrameTime = now;
+
+                // 按恒定角速度累加角度
+                rotationAngle += rotationDirection * ROTATION_SPEED * dt;
+
+                cardFlipper.style.transform = 'rotateY(' + rotationAngle + 'deg)';
+
+                animationFrame = requestAnimationFrame(rotateStep);
+            }
+
+            // ========== 吸附至最近的完整面 ==========
+            function snapToFace() {
+                isRotating = false;
+                isSnapping = true;
+
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                    animationFrame = null;
+                }
+
+                // 找到最近的 180° 倍数
+                let nearest180 = Math.round(rotationAngle / 180) * 180;
+                let diff = rotationAngle - nearest180;
+
+                // 等距情况（当前角度恰好距两个完整面各 90°）：统一吸附至正面（0° 的倍数）
+                if (Math.abs(Math.abs(diff) - 90) < 0.5) {
+                    nearest180 = Math.round(rotationAngle / 360) * 360;
+                }
+
+                // 若已处于目标角度，不播放过渡动画，直接保持静止
+                if (Math.abs(nearest180 - rotationAngle) < 0.5) {
+                    syncFlippedClass(nearest180);
+                    cardFlipper.style.transition = '';
+                    cardFlipper.style.transform = '';
+                    isSnapping = false;
+                    return;
+                }
+
+                // 启用 0.3s ease-out 缓出过渡
+                cardFlipper.style.transition = 'transform 0.3s ease-out';
+                // 强制重排，确保过渡从当前角度生效
+                void cardFlipper.offsetWidth;
+                cardFlipper.style.transform = 'rotateY(' + nearest180 + 'deg)';
+
+                // 过渡结束后同步 flipped 类状态
+                setTimeout(function() {
+                    syncFlippedClass(nearest180);
+                    // 清除内联样式，交由 CSS 类接管
+                    cardFlipper.style.transition = '';
+                    cardFlipper.style.transform = '';
+                    isSnapping = false;
+                }, SNAP_DURATION);
+            }
+
+            // 根据最终角度同步 flipped 类状态
+            function syncFlippedClass(angle) {
+                var finalMod = ((angle % 360) + 360) % 360;
+                if (Math.abs(finalMod - 180) < 0.5) {
+                    cardFlipper.classList.add('flipped');
+                } else {
+                    cardFlipper.classList.remove('flipped');
+                }
+            }
+
+            // ========== 按下处理 ==========
+            function startPress() {
+                // 旋转中或吸附中或已按下时，忽略新的按下事件
+                if (isPressing || isRotating || isSnapping) return;
+
+                isPressing = true;
+                wasLongPress = false;
+                flipBtn.classList.add('is-pressing');
+
+                // 200ms 后触发长按旋转
+                longPressTimer = setTimeout(function() {
+                    wasLongPress = true;
+                    startRotation();
+                }, LONG_PRESS_THRESHOLD);
+            }
+
+            // ========== 松开处理 ==========
+            function endPress() {
+                if (!isPressing) return null;
+
+                isPressing = false;
+                flipBtn.classList.remove('is-pressing');
+
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+
+                var wasRotating = isRotating;
+
+                if (isRotating) {
+                    snapToFace();
+                }
+
+                return { wasRotating: wasRotating, wasLongPress: wasLongPress };
+            }
+
+            // ========== 绑定翻转按钮事件 ==========
+            if (flipBtn) {
+                // 鼠标按下
+                flipBtn.addEventListener('mousedown', function(e) {
+                    if (e.button !== 0) return; // 仅响应左键
+                    startPress();
+                });
+
+                // 触摸开始
+                flipBtn.addEventListener('touchstart', function(e) {
+                    e.preventDefault(); // 阻止鼠标事件模拟和默认滚动
+                    startPress();
+                }, { passive: false });
+
+                // 触摸结束
+                flipBtn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    var result = endPress();
+                    // 短按（未旋转且未长按）时执行翻转
+                    if (result && !result.wasRotating && !result.wasLongPress) {
+                        toggleFlip();
+                    }
+                    // 重置标志，防止后续可能的鼠标 click 误判
+                    wasLongPress = false;
+                }, { passive: false });
+
+                // 触摸取消（如手指移出触摸区域）
+                flipBtn.addEventListener('touchcancel', function() {
+                    endPress();
+                });
+
+                // 鼠标点击（短按翻转，长按不翻转）
                 flipBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
+                    if (wasLongPress || isRotating || isSnapping) {
+                        wasLongPress = false;
+                        return;
+                    }
                     toggleFlip();
                 });
             }
 
+            // 鼠标松开监听在 document 上，处理鼠标移出按钮后释放的情况
+            document.addEventListener('mouseup', function() {
+                endPress();
+            });
+
+            // 页面失去焦点时视为松手，执行吸附
+            window.addEventListener('blur', function() {
+                endPress();
+            });
+
+            // ========== 卡片正面/背面点击翻转（旋转期间不响应） ==========
             if (cardFront && cardFlipper) {
                 cardFront.addEventListener('click', function(e) {
-                    // 排除联系信息项与头像区域的点击，前者仅执行复制，后者仅执行跳转
+                    // 按钮按住期间不响应卡片翻转
+                    if (isPressing || isRotating || isSnapping) return;
                     if (e.target.closest('.contact-item') || e.target.closest('.avatar')) {
                         return;
                     }
@@ -1074,6 +1230,7 @@
 
             if (cardBack && cardFlipper) {
                 cardBack.addEventListener('click', function(e) {
+                    if (isPressing || isRotating || isSnapping) return;
                     if (e.target.closest('.back-logo-container')) {
                         return;
                     }
@@ -1081,14 +1238,14 @@
                 });
             }
 
-            // 头像点击事件 - 阻止冒泡，保留默认跳转行为，防止触发翻转
+            // 头像点击 - 阻止冒泡，保留默认跳转行为
             if (avatarEl) {
                 avatarEl.addEventListener('click', function(e) {
                     e.stopPropagation();
                 });
             }
 
-            // 校徽点击事件 - 仅执行跳转，不触发翻转（阻止冒泡，保留默认跳转行为）
+            // 校徽点击 - 阻止冒泡，保留默认跳转行为
             if (backLogoContainer) {
                 backLogoContainer.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -1100,7 +1257,6 @@
 
             contactItems.forEach(item => {
                 item.addEventListener('click', function(e) {
-                    // 阻止冒泡，防止触发卡片翻转，确保复制与翻转互斥
                     e.stopPropagation();
                     const textToCopy = this.getAttribute('data-copy');
                     const toast = this.querySelector('.copy-toast');
@@ -1161,7 +1317,6 @@
 
             let hatAnimationStarted = false;
 
-            // 计算并应用尺寸与定位
             function updateSantaHatStyle() {
                 if (!shouldShowHat()) return;
                 const hatContainer = document.getElementById('santaHatContainer');
@@ -1176,13 +1331,11 @@
                 const baseSize = 90;
                 const scaleRatio = avatarWidth / baseSize;
                 
-                // 更新了 top 和 left 的基准值
                 hatContainer.style.top = `${-35 * scaleRatio}px`;
                 hatContainer.style.left = `${22 * scaleRatio}px`;
                 hatContainer.style.width = `${avatarWidth * 0.7}px`;
             }
 
-            // 生成彩带特效
             function createConfetti() {
                 const hatContainer = document.getElementById('santaHatContainer');
                 if (!hatContainer) return;
@@ -1202,11 +1355,10 @@
                     piece.style.width = (4 + Math.random() * 4) + 'px';
                     piece.style.height = (8 + Math.random() * 6) + 'px';
                     
-                    // 随机生成爆裂的位移距离和旋转角度
                     const angle = Math.random() * Math.PI * 2;
                     const velocity = 25 + Math.random() * 35; 
                     const tx = Math.cos(angle) * velocity;
-                    const ty = Math.sin(angle) * velocity - 30; // 向上偏移，模拟爆开
+                    const ty = Math.sin(angle) * velocity - 30;
                     
                     const rot = (Math.random() - 0.5) * 1080 + 'deg'; 
                     
@@ -1217,7 +1369,6 @@
                     confettiWrapper.appendChild(piece);
                 }
 
-                // 0.5s 后清理彩带 DOM
                 setTimeout(() => {
                     if (confettiWrapper.parentNode) {
                         confettiWrapper.parentNode.removeChild(confettiWrapper);
@@ -1225,7 +1376,6 @@
                 }, 500);
             }
 
-            // 初始化触发动画
             function initSantaHat() {
                 if (!shouldShowHat()) return;
                 const hatContainer = document.getElementById('santaHatContainer');
@@ -1235,32 +1385,23 @@
 
                 if (!hatAnimationStarted) {
                     hatAnimationStarted = true;
-                    // 触发第一阶段放大动画
                     hatContainer.style.display = 'block';
-                    // 强制重排确保动画从头播放
                     void hatContainer.offsetWidth; 
                     hatContainer.classList.add('growing');
 
-                    // 1.4s 第一阶段结束后，平滑进入第二阶段回弹
                     setTimeout(() => {
-                        // 1. 获取第一阶段动画结束时真实的 transform 值（峰值 scale(1.2) 的矩阵）
                         const computedTransform = window.getComputedStyle(hatContainer).transform;
                         
-                        // 2. 移除动画类，此时元素会恢复初始 scale(0)
                         hatContainer.classList.remove('growing');
                         
-                        // 3. 立即用内联样式锁定刚才的峰值状态，消除瞬间跳变
                         hatContainer.style.transition = 'none';
                         hatContainer.style.transform = computedTransform === 'none' ? 'scale(1.2)' : computedTransform;
                         
-                        // 4. 强制重排，让浏览器确认刚才的锁定状态
                         void hatContainer.offsetWidth;
                         
-                        // 5. 启用弹簧阻尼回弹 transition，并设置最终目标 scale(1)
                         hatContainer.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
                         hatContainer.style.transform = 'scale(1)';
 
-                        // 6. 监听回弹动画结束事件，触发彩带特效
                         const onEnd = (e) => {
                             if (e.propertyName === 'transform') {
                                 hatContainer.removeEventListener('transitionend', onEnd);
