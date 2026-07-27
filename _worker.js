@@ -6131,7 +6131,8 @@ async function nginx() {
             --radius: 20px;
             --radius-sm: 12px;
             --transition: 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
-            --transition-flip: 0.7s cubic-bezier(0.4, 0.0, 0.2, 1);
+            /* 弹簧物理曲线：阻尼比 0.8，刚度 350，时长 0.7s */
+            --transition-flip: 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
@@ -6206,7 +6207,7 @@ async function nginx() {
             perspective: 1200px;
         }
 
-        /* 3D翻转容器 */
+        /* 3D翻转容器 - 弹簧物理曲线 */
         .card-flipper {
             position: relative;
             width: 100%;
@@ -6234,7 +6235,7 @@ async function nginx() {
 
         /* 正面 */
         .card-front {
-            /* 在flipper内部正常定位 */
+            cursor: pointer;
         }
 
         /* 背面 */
@@ -6249,6 +6250,20 @@ async function nginx() {
             align-items: center;
             justify-content: center;
             min-height: 100%;
+            cursor: pointer;
+        }
+
+        /* 背面内容容器 - 翻转过程中呈现轻微透视缩放效果 */
+        .card-back-inner {
+            width: 100%;
+            transform: scale(0.92);
+            transition: transform var(--transition-flip);
+            transform-origin: center center;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .card-flipper.flipped .card-back-inner {
+            transform: scale(1);
         }
 
         /* 卡片顶部蓝色装饰条 */
@@ -6340,12 +6355,8 @@ async function nginx() {
             pointer-events: none;
         }
         @keyframes rotate-slow {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .name {
@@ -6518,11 +6529,18 @@ async function nginx() {
             padding: 10px 0;
         }
         .back-logo-container {
+            display: inline-block;
             margin-bottom: 18px;
             transition: all 0.4s ease;
+            text-decoration: none;
+            cursor: pointer;
+            line-height: 0;
         }
         .back-logo-container.hidden {
             display: none;
+        }
+        .back-logo-container:hover .back-logo {
+            transform: scale(1.04);
         }
         .back-logo {
             width: 160px;
@@ -6538,6 +6556,7 @@ async function nginx() {
             letter-spacing: 0.5px;
             margin-bottom: 10px;
             line-height: 1.3;
+            text-align: center;
         }
         .back-info-divider {
             width: 36px;
@@ -6546,23 +6565,52 @@ async function nginx() {
             border-radius: 1px;
             margin: 4px auto 14px;
         }
-        .back-detail {
+
+        /* 学校信息列表 - 排版规则实现 */
+        .back-info-list {
+            width: 100%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .info-row {
+            display: flex;
+            align-items: flex-start;
             font-size: 14px;
-            font-weight: 500;
+            line-height: 1.7;
             color: var(--text-secondary);
-            letter-spacing: 0.3px;
-            margin-bottom: 6px;
-            line-height: 1.5;
         }
-        .back-detail:last-child {
-            margin-bottom: 0;
-        }
-        .back-detail-label {
+        /* 字段名称：固定 4 字符宽度，超出省略号截断，4 字符两端对齐 */
+        .info-label {
+            width: 5em;
+            flex-shrink: 0;
             font-weight: 600;
             color: var(--primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: justify;
+            text-align-last: justify;
+            letter-spacing: 0.5px;
+        }
+        .info-colon {
+            flex-shrink: 0;
+            margin-right: 0.4em;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        /* 字段值：两端对齐，最后一行左对齐，自动换行后与首字符对齐 */
+        .info-value {
+            flex: 1;
+            min-width: 0;
+            text-align: justify;
+            text-align-last: left;
+            word-break: break-all;
+            color: var(--text-secondary);
         }
 
-        /* 背面内容整体居中（无logo时） */
+        /* 校徽加载失败时整体居中 */
         .back-content.no-logo .back-school-name {
             margin-top: 8px;
         }
@@ -6700,13 +6748,18 @@ async function nginx() {
                 padding: 3px 8px;
             }
             .back-logo {
-                width: 120px;
+                width: 130px;
             }
             .back-school-name {
                 font-size: 16px;
             }
-            .back-detail {
+            .back-info-list {
+                max-width: 280px;
+                gap: 8px;
+            }
+            .info-row {
                 font-size: 13px;
+                line-height: 1.6;
             }
             .back-logo-container {
                 margin-bottom: 12px;
@@ -6772,13 +6825,18 @@ async function nginx() {
                 height: calc(100% + 20px);
             }
             .back-logo {
-                width: 100px;
+                width: 105px;
             }
             .back-school-name {
                 font-size: 15px;
             }
-            .back-detail {
+            .back-info-list {
+                max-width: 240px;
+                gap: 6px;
+            }
+            .info-row {
                 font-size: 12px;
+                line-height: 1.55;
             }
             .flip-btn {
                 width: 36px;
@@ -6804,7 +6862,7 @@ async function nginx() {
         <!-- 3D翻转容器 -->
         <div class="card-flipper" id="cardFlipper">
             <!-- 正面 -->
-            <div class="card-face card-front">
+            <div class="card-face card-front" id="cardFront">
                 <div class="avatar-container">
                     <div class="avatar-ring"></div>
                     <div class="avatar" id="avatar" title="WendySG">W</div>
@@ -6844,17 +6902,40 @@ async function nginx() {
             </div>
 
             <!-- 背面 -->
-            <div class="card-face card-back">
-                <div class="back-content" id="backContent">
-                    <!-- 校徽容器 -->
-                    <div class="back-logo-container" id="backLogoContainer">
-                        <img class="back-logo" id="backLogo" src="https://althgot.de5.net/static/school_logo.png" alt="校徽">
+            <div class="card-face card-back" id="cardBack">
+                <div class="card-back-inner">
+                    <div class="back-content" id="backContent">
+                        <!-- 校徽容器（点击跳转官网） -->
+                        <a class="back-logo-container" id="backLogoContainer" href="https://www.fjny.edu.cn/index.htm" target="_blank" rel="noopener noreferrer" title="点击访问学校官网">
+                            <img class="back-logo" id="backLogo" src="https://althgot.de5.net/static/school_logo.png" alt="福建农业职业技术学院校徽">
+                        </a>
+                        <!-- 学校名称 -->
+                        <h2 class="back-school-name">福建农业职业技术学院</h2>
+                        <div class="back-info-divider"></div>
+                        <!-- 学校信息列表 -->
+                        <div class="back-info-list">
+                            <div class="info-row">
+                                <span class="info-label">所在校区</span>
+                                <span class="info-colon">：</span>
+                                <span class="info-value">相思岭校区</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">校区地址</span>
+                                <span class="info-colon">：</span>
+                                <span class="info-value">福州市福清市镜洋镇红星村龟山116号</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">就读专业</span>
+                                <span class="info-colon">：</span>
+                                <span class="info-value">工程造价</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">入学年份</span>
+                                <span class="info-colon">：</span>
+                                <span class="info-value">2026年</span>
+                            </div>
+                        </div>
                     </div>
-                    <!-- 学校信息 -->
-                    <h2 class="back-school-name">福建农业职业技术学院</h2>
-                    <div class="back-info-divider"></div>
-                    <p class="back-detail"><span class="back-detail-label">入学年份</span>：2026年</p>
-                    <p class="back-detail"><span class="back-detail-label">专业</span>：工程造价</p>
                 </div>
             </div>
         </div>
@@ -6862,7 +6943,6 @@ async function nginx() {
         <!-- 翻转按钮 -->
         <div class="flip-btn-wrapper">
             <button class="flip-btn" id="flipBtn" title="翻转名片" aria-label="翻转名片">
-                <!-- 翻转图标 -->
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" stroke-dasharray="42 14" stroke-linecap="round" />
                     <polyline points="7,8 5,11 8,11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -6967,7 +7047,6 @@ async function nginx() {
                 testImg.onload = function() {
                     clearTimeout(timeout);
                     showLogoContainer();
-                    // 确保logo的src正确
                     if (backLogo && backLogo.src !== schoolLogoUrl) {
                         backLogo.src = schoolLogoUrl;
                     }
@@ -6979,7 +7058,6 @@ async function nginx() {
                 testImg.src = schoolLogoUrl;
             }
 
-            // 同时监听backLogo的加载情况
             if (backLogo) {
                 backLogo.onerror = function() {
                     hideLogoContainer();
@@ -6994,19 +7072,54 @@ async function nginx() {
             // ========== 翻转功能 ==========
             const flipBtn = document.getElementById('flipBtn');
             const cardFlipper = document.getElementById('cardFlipper');
+            const cardFront = document.getElementById('cardFront');
+            const cardBack = document.getElementById('cardBack');
 
+            function toggleFlip() {
+                cardFlipper.classList.toggle('flipped');
+            }
+
+            // 翻转按钮点击触发翻转
             if (flipBtn && cardFlipper) {
-                flipBtn.addEventListener('click', function() {
-                    cardFlipper.classList.toggle('flipped');
+                flipBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleFlip();
                 });
             }
 
-            // ========== 复制功能 ==========
+            // 正面点击翻转（排除联系信息项 - 联系信息项仅执行复制）
+            if (cardFront && cardFlipper) {
+                cardFront.addEventListener('click', function(e) {
+                    if (e.target.closest('.contact-item')) {
+                        return;
+                    }
+                    toggleFlip();
+                });
+            }
+
+            // 背面点击翻转（排除校徽区域 - 校徽仅执行跳转）
+            if (cardBack && cardFlipper) {
+                cardBack.addEventListener('click', function(e) {
+                    if (e.target.closest('.back-logo-container')) {
+                        return;
+                    }
+                    toggleFlip();
+                });
+            }
+
+            // 校徽点击事件 - 仅执行跳转，不触发翻转（阻止冒泡，保留默认跳转行为）
+            if (backLogoContainer) {
+                backLogoContainer.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+
+            // ========== 复制功能（与翻转互斥） ==========
             const contactItems = document.querySelectorAll('.contact-item');
 
             contactItems.forEach(item => {
                 item.addEventListener('click', function(e) {
-                    // 防止事件冒泡影响翻转
+                    // 阻止冒泡，防止触发卡片翻转，确保复制与翻转互斥
                     e.stopPropagation();
                     const textToCopy = this.getAttribute('data-copy');
                     const toast = this.querySelector('.copy-toast');
