@@ -159,6 +159,15 @@
             transform: scale(1);
         }
 
+        /* 阻止2D点击透传 */
+        .card-flipper:not(.flipped) .card-back {
+            pointer-events: none;
+        }
+
+        .card-flipper.flipped .card-front {
+            pointer-events: none;
+        }
+
         /* 卡片顶部蓝色装饰条 */
         .card-face::before {
             content: '';
