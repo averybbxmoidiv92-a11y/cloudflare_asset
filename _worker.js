@@ -6241,13 +6241,17 @@ async function nginx() {
             border-radius: 50%;
         }
 
-        /* 头像 */
+        /* 头像容器 */
         .avatar-container {
             position: relative;
             display: inline-block;
             margin-bottom: 20px;
             z-index: 1;
+            width: 90px;
+            height: 90px;
         }
+
+        /* 头像（默认字母与图片共用） */
         .avatar {
             width: 90px;
             height: 90px;
@@ -6264,11 +6268,31 @@ async function nginx() {
             user-select: none;
             transition: var(--transition);
             position: relative;
+            object-fit: cover;
+            /* 图片模式时使用 */
+            overflow: hidden;
         }
         .avatar:hover {
             box-shadow: 0 12px 36px rgba(44, 82, 130, 0.32), 0 0 0 10px var(--primary-soft);
             transform: translateY(-2px);
         }
+
+        /* 当头像为图片时，覆盖文字样式 */
+        .avatar.avatar-image {
+            background: transparent;
+            font-size: 0;
+            color: transparent;
+            letter-spacing: 0;
+            padding: 0;
+        }
+        .avatar.avatar-image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
         /* 头像外圈虚线装饰 */
         .avatar-ring {
             position: absolute;
@@ -6507,10 +6531,18 @@ async function nginx() {
                 padding: 36px 20px 28px;
                 border-radius: 16px;
             }
+            .avatar-container {
+                width: 74px;
+                height: 74px;
+            }
             .avatar {
                 width: 74px;
                 height: 74px;
                 font-size: 30px;
+                box-shadow: 0 8px 24px rgba(44, 82, 130, 0.25), 0 0 0 5px var(--primary-soft);
+            }
+            .avatar:hover {
+                box-shadow: 0 12px 32px rgba(44, 82, 130, 0.32), 0 0 0 8px var(--primary-soft);
             }
             .avatar-ring {
                 top: -12px;
@@ -6576,6 +6608,21 @@ async function nginx() {
             .name {
                 font-size: 22px;
             }
+            .avatar-container {
+                width: 64px;
+                height: 64px;
+            }
+            .avatar {
+                width: 64px;
+                height: 64px;
+                font-size: 26px;
+            }
+            .avatar-ring {
+                top: -10px;
+                left: -10px;
+                width: calc(100% + 20px);
+                height: calc(100% + 20px);
+            }
         }
     </style>
 </head>
@@ -6593,7 +6640,7 @@ async function nginx() {
             <!-- 头像 -->
             <div class="avatar-container">
                 <div class="avatar-ring"></div>
-                <div class="avatar" title="WendySG">W</div>
+                <div class="avatar" id="avatar" title="WendySG">W</div>
             </div>
 
             <!-- 姓名 -->
@@ -6654,6 +6701,81 @@ async function nginx() {
 
     <script>
         (function() {
+            // ========== 头像加载逻辑 ==========
+            const avatarEl = document.getElementById('avatar');
+            const avatarImageUrl = 'https://althgot.de5.net/static/avatar.jpg';
+            // 加上时间戳避免缓存导致跨域或304问题？不需要，只是检测可访问性。
+            // 但为避免某些CDN缓存策略，可以加一个随机参数，不过这里简单检测即可。
+
+            function setDefaultAvatar() {
+                // 恢复为默认字母头像
+                avatarEl.classList.remove('avatar-image');
+                avatarEl.innerHTML = ''; // 清空可能的img子元素
+                avatarEl.textContent = 'W';
+                avatarEl.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
+                avatarEl.style.color = '#ffffff';
+                avatarEl.style.fontSize = '';
+                avatarEl.style.fontWeight = '';
+                avatarEl.style.letterSpacing = '';
+                avatarEl.title = 'WendySG';
+            }
+
+            function setImageAvatar(imgSrc) {
+                // 设置为图片头像
+                avatarEl.classList.add('avatar-image');
+                avatarEl.textContent = '';
+                avatarEl.style.background = 'transparent';
+                avatarEl.style.color = 'transparent';
+                avatarEl.style.fontSize = '0';
+                avatarEl.style.letterSpacing = '0';
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = 'WendySG 头像';
+                img.onload = function() {
+                    // 图片加载成功，确保样式正确
+                    avatarEl.classList.add('avatar-image');
+                };
+                img.onerror = function() {
+                    // 如果已经设置图片但加载失败，回退默认
+                    setDefaultAvatar();
+                };
+                avatarEl.innerHTML = '';
+                avatarEl.appendChild(img);
+                avatarEl.title = 'WendySG';
+            }
+
+            function checkAvatar() {
+                const testImg = new Image();
+                testImg.onload = function() {
+                    // 图片可访问，替换头像
+                    setImageAvatar(avatarImageUrl);
+                };
+                testImg.onerror = function() {
+                    // 图片不可访问，保持默认头像
+                    setDefaultAvatar();
+                };
+                // 开始加载测试图片
+                testImg.src = avatarImageUrl;
+                // 设置超时（5秒），如果服务器无响应则视为不可访问
+                const timeout = setTimeout(() => {
+                    testImg.src = ''; // 取消加载
+                    setDefaultAvatar();
+                }, 5000);
+                // 如果加载完成，清除超时
+                testImg.onload = function() {
+                    clearTimeout(timeout);
+                    setImageAvatar(avatarImageUrl);
+                };
+                testImg.onerror = function() {
+                    clearTimeout(timeout);
+                    setDefaultAvatar();
+                };
+            }
+
+            // 页面加载后立即检测
+            checkAvatar();
+
+            // ========== 复制功能 ==========
             const contactItems = document.querySelectorAll('.contact-item');
 
             contactItems.forEach(item => {
