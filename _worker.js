@@ -8746,6 +8746,7 @@ async function nginx() {
             function shouldShowHat() {
                 if (BIRTHDAY_DATE === "always") return true;
                 const today = new Date();
+                console.log(today);
                 const month = String(today.getMonth() + 1).padStart(2, '0');
                 const day = String(today.getDate()).padStart(2, '0');
                 return \`${month}-${day}\` === BIRTHDAY_DATE;
