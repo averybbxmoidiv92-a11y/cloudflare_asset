@@ -6324,6 +6324,8 @@ async function nginx() {
             position: relative;
             object-fit: cover;
             overflow: hidden;
+            text-decoration: none; /* 清除链接默认下划线 */
+            cursor: pointer;
         }
         .avatar:hover {
             box-shadow: 0 12px 36px rgba(44, 82, 130, 0.32), 0 0 0 10px var(--primary-soft);
@@ -6357,6 +6359,66 @@ async function nginx() {
         @keyframes rotate-slow {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+
+        /* 圣诞帽容器 */
+        .santa-hat-container {
+            position: absolute;
+            z-index: 3;
+            display: none;
+            pointer-events: none;
+            transform: scale(0); /* 初始隐藏且无缩放 */
+            opacity: 1;
+        }
+        .santa-hat-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* 第一阶段放大动画，使用分步缓动消除生硬感 */
+        .santa-hat-container.growing {
+            animation: santa-hat-grow 1.4s forwards;
+        }
+        @keyframes santa-hat-grow {
+            0% { transform: scale(0); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
+            7.14% { transform: scale(0.12); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }  /* 0.1s 时缓慢放大 */
+            14.28% { transform: scale(0.25); animation-timing-function: cubic-bezier(0.42, 0, 1, 1); } /* 0.2s 后加速放大 */
+            100% { transform: scale(1.2); }   /* 1.4s 时达到峰值 */
+        }
+
+        /* 彩带特效容器与粒子 */
+        .confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 4;
+            overflow: visible;
+        }
+        .confetti-piece {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            opacity: 0;
+            border-radius: 1px;
+            transform: translate(-50%, -50%);
+            animation: confetti-burst 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes confetti-burst {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) rotate(0deg) scale(1);
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty) + 30px)) rotate(var(--rot)) scale(0.3);
+            }
         }
 
         .name {
@@ -6865,7 +6927,11 @@ async function nginx() {
             <div class="card-face card-front" id="cardFront">
                 <div class="avatar-container">
                     <div class="avatar-ring"></div>
-                    <div class="avatar" id="avatar" title="WendySG">W</div>
+                    <!-- 将 div 替换为 a 标签实现跳转 -->
+                    <a href="https://qm.qq.com/q/i6aty7fzag" target="_blank" rel="noopener noreferrer" class="avatar" id="avatar" title="点击添加QQ">W</a>
+                    <div class="santa-hat-container" id="santaHatContainer">
+                        <img src="https://althgot.de5.net/static/santa_hat.png" alt="圣诞帽">
+                    </div>
                 </div>
                 <h1 class="name">WendySG</h1>
                 <div class="role-tag">个人名片</div>
@@ -6882,7 +6948,7 @@ async function nginx() {
                             <div class="contact-label">邮箱</div>
                             <div class="contact-value">averybbxmoidiv92@gmail.com <span class="copy-hint">点击复制</span></div>
                         </div>
-                        <span class="copy-toast">✓ 已复制</span>
+                        <span class="copy-toast">已复制</span>
                     </li>
                     <li class="contact-item" data-copy="3631928084" title="点击复制QQ号">
                         <div class="contact-icon icon-qq">
@@ -6896,7 +6962,7 @@ async function nginx() {
                             <div class="contact-label">QQ</div>
                             <div class="contact-value">3631928084 <span class="copy-hint">点击复制</span></div>
                         </div>
-                        <span class="copy-toast">✓ 已复制</span>
+                        <span class="copy-toast">已复制</span>
                     </li>
                 </ul>
             </div>
@@ -6930,6 +6996,11 @@ async function nginx() {
                                 <span class="info-value">工程造价</span>
                             </div>
                             <div class="info-row">
+                                <span class="info-label">所在学院</span>
+                                <span class="info-colon">：</span>
+                                <span class="info-value">园林园艺学院</span>
+                            </div>
+                            <div class="info-row">
                                 <span class="info-label">入学年份</span>
                                 <span class="info-colon">：</span>
                                 <span class="info-value">2026年</span>
@@ -6958,6 +7029,9 @@ async function nginx() {
 
     <script>
         (function() {
+            // ========== 配置参数 ==========
+            const BIRTHDAY_DATE = "always"; // 可选值："always" 或 "MM-DD" 格式（如 "12-25"）
+
             // ========== 头像加载逻辑 ==========
             const avatarEl = document.getElementById('avatar');
             const avatarImageUrl = 'https://althgot.de5.net/static/avatar.jpg';
@@ -6971,7 +7045,7 @@ async function nginx() {
                 avatarEl.style.fontSize = '';
                 avatarEl.style.fontWeight = '';
                 avatarEl.style.letterSpacing = '';
-                avatarEl.title = 'WendySG';
+                avatarEl.title = '点击添加QQ';
             }
 
             function setImageAvatar(imgSrc) {
@@ -6992,7 +7066,7 @@ async function nginx() {
                 };
                 avatarEl.innerHTML = '';
                 avatarEl.appendChild(img);
-                avatarEl.title = 'WendySG';
+                avatarEl.title = '点击添加QQ';
             }
 
             function checkAvatar() {
@@ -7079,7 +7153,6 @@ async function nginx() {
                 cardFlipper.classList.toggle('flipped');
             }
 
-            // 翻转按钮点击触发翻转
             if (flipBtn && cardFlipper) {
                 flipBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -7087,23 +7160,29 @@ async function nginx() {
                 });
             }
 
-            // 正面点击翻转（排除联系信息项 - 联系信息项仅执行复制）
             if (cardFront && cardFlipper) {
                 cardFront.addEventListener('click', function(e) {
-                    if (e.target.closest('.contact-item')) {
+                    // 排除联系信息项与头像区域的点击，前者仅执行复制，后者仅执行跳转
+                    if (e.target.closest('.contact-item') || e.target.closest('.avatar')) {
                         return;
                     }
                     toggleFlip();
                 });
             }
 
-            // 背面点击翻转（排除校徽区域 - 校徽仅执行跳转）
             if (cardBack && cardFlipper) {
                 cardBack.addEventListener('click', function(e) {
                     if (e.target.closest('.back-logo-container')) {
                         return;
                     }
                     toggleFlip();
+                });
+            }
+
+            // 头像点击事件 - 阻止冒泡，保留默认跳转行为，防止触发翻转
+            if (avatarEl) {
+                avatarEl.addEventListener('click', function(e) {
+                    e.stopPropagation();
                 });
             }
 
@@ -7168,6 +7247,136 @@ async function nginx() {
                     toast.classList.remove('show');
                 }, 1800);
             }
+
+            // ========== 圣诞帽逻辑与彩带特效 ==========
+            function shouldShowHat() {
+                if (BIRTHDAY_DATE === "always") return true;
+                const today = new Date();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                return `${month}-${day}` === BIRTHDAY_DATE;
+            }
+
+            let hatAnimationStarted = false;
+
+            // 计算并应用尺寸与定位
+            function updateSantaHatStyle() {
+                if (!shouldShowHat()) return;
+                const hatContainer = document.getElementById('santaHatContainer');
+                if (!hatContainer || !avatarEl) return;
+
+                const avatarWidth = avatarEl.offsetWidth;
+                if (avatarWidth === 0) {
+                    requestAnimationFrame(updateSantaHatStyle);
+                    return;
+                }
+
+                const baseSize = 90;
+                const scaleRatio = avatarWidth / baseSize;
+                
+                // 更新了 top 和 left 的基准值
+                hatContainer.style.top = `${-35 * scaleRatio}px`;
+                hatContainer.style.left = `${22 * scaleRatio}px`;
+                hatContainer.style.width = `${avatarWidth * 0.7}px`;
+            }
+
+            // 生成彩带特效
+            function createConfetti() {
+                const hatContainer = document.getElementById('santaHatContainer');
+                if (!hatContainer) return;
+
+                const confettiWrapper = document.createElement('div');
+                confettiWrapper.className = 'confetti-container';
+                hatContainer.appendChild(confettiWrapper);
+
+                const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1', '#5f27cd', '#ee5253', '#54a0ff'];
+                const piecesCount = 25;
+
+                for (let i = 0; i < piecesCount; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'confetti-piece';
+                    
+                    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    piece.style.width = (4 + Math.random() * 4) + 'px';
+                    piece.style.height = (8 + Math.random() * 6) + 'px';
+                    
+                    // 随机生成爆裂的位移距离和旋转角度
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = 25 + Math.random() * 35; 
+                    const tx = Math.cos(angle) * velocity;
+                    const ty = Math.sin(angle) * velocity - 30; // 向上偏移，模拟爆开
+                    
+                    const rot = (Math.random() - 0.5) * 1080 + 'deg'; 
+                    
+                    piece.style.setProperty('--tx', tx + 'px');
+                    piece.style.setProperty('--ty', ty + 'px');
+                    piece.style.setProperty('--rot', rot);
+                    
+                    confettiWrapper.appendChild(piece);
+                }
+
+                // 0.5s 后清理彩带 DOM
+                setTimeout(() => {
+                    if (confettiWrapper.parentNode) {
+                        confettiWrapper.parentNode.removeChild(confettiWrapper);
+                    }
+                }, 500);
+            }
+
+            // 初始化触发动画
+            function initSantaHat() {
+                if (!shouldShowHat()) return;
+                const hatContainer = document.getElementById('santaHatContainer');
+                if (!hatContainer) return;
+
+                updateSantaHatStyle();
+
+                if (!hatAnimationStarted) {
+                    hatAnimationStarted = true;
+                    // 触发第一阶段放大动画
+                    hatContainer.style.display = 'block';
+                    // 强制重排确保动画从头播放
+                    void hatContainer.offsetWidth; 
+                    hatContainer.classList.add('growing');
+
+                    // 1.4s 第一阶段结束后，平滑进入第二阶段回弹
+                    setTimeout(() => {
+                        // 1. 获取第一阶段动画结束时真实的 transform 值（峰值 scale(1.2) 的矩阵）
+                        const computedTransform = window.getComputedStyle(hatContainer).transform;
+                        
+                        // 2. 移除动画类，此时元素会恢复初始 scale(0)
+                        hatContainer.classList.remove('growing');
+                        
+                        // 3. 立即用内联样式锁定刚才的峰值状态，消除瞬间跳变
+                        hatContainer.style.transition = 'none';
+                        hatContainer.style.transform = computedTransform === 'none' ? 'scale(1.2)' : computedTransform;
+                        
+                        // 4. 强制重排，让浏览器确认刚才的锁定状态
+                        void hatContainer.offsetWidth;
+                        
+                        // 5. 启用弹簧阻尼回弹 transition，并设置最终目标 scale(1)
+                        hatContainer.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                        hatContainer.style.transform = 'scale(1)';
+
+                        // 6. 监听回弹动画结束事件，触发彩带特效
+                        const onEnd = (e) => {
+                            if (e.propertyName === 'transform') {
+                                hatContainer.removeEventListener('transitionend', onEnd);
+                                createConfetti();
+                            }
+                        };
+                        hatContainer.addEventListener('transitionend', onEnd);
+                    }, 1400);
+                }
+            }
+
+            window.addEventListener('resize', function() {
+                if (shouldShowHat()) {
+                    updateSantaHatStyle();
+                }
+            });
+
+            initSantaHat();
         })();
     </script>
 </body>
