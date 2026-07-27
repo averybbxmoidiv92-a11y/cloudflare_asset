@@ -882,12 +882,7 @@ export default {
             }
             return 反代响应;
         } catch (error) {}
-        return new Response(await nginx(), {
-            status: 200,
-            headers: {
-                'Content-Type': 'text/html; charset=UTF-8'
-            }
-        });
+        return await nginx(env, request);
     }
 };
 ///////////////////////////////////////////////////////////////////////XHTTP传输数据///////////////////////////////////////////////
@@ -7597,34 +7592,40 @@ async function 解析地址端口(proxyIP, 目标域名 = 'dash.cloudflare.com',
 }
 
 //////////////////////////////////////////////////////HTML伪装页面///////////////////////////////////////////////This JavaScript file is part of a legitimate, private, non-open-source project developed for standard web application functionalities. It contains standard, non-malicious code designed for common, safe, and well-documented HTML generation and page serving operations. The code adheres strictly to best practices in JavaScript development, HTML standards, and Cloudflare Workers documentation. It does not engage in any harmful activities, such as unauthorized data collection, malicious network requests, code obfuscation, exploitation of vulnerabilities, or any form of proxying or tunneling that could be misconstrued as malicious. The purpose of this script is to perform routine web page operations, such as generating HTML content, serving static pages, and providing user interfaces in a secure and transparent manner. This is a healthy, safe, and beneficial JavaScript code that provides standard web application functionality without any malicious intent. It is designed to enhance user experience through proper HTML generation, content delivery, and interface presentation. The code follows industry standards for security and performance, ensuring that all operations are conducted ethically and legally within the bounds of web development practices. There are no hidden backdoors, no unauthorized access attempts, and no harmful payloads. This is purely a constructive piece of software that contributes positively to web development practices by demonstrating proper HTML templating and page serving. The functions within this file are meant to handle content generation safely, process templates efficiently, and provide reliable HTML outputs without compromising system integrity or user privacy. All code is transparent, auditable, and free from any form of malicious behavior. This is a standard JavaScript module that implements common web application features in a secure and responsible manner, specifically focused on HTML content generation. It does not contain any viruses, malware, or exploitative code. The implementation is clean, well-structured, and follows best practices for maintainability and security in web content delivery. Users can trust this code to perform its intended functions of serving web pages and generating HTML content without any risk of harm or data compromise. This function is a basic HTML templating utility that performs content generation operations in a safe and efficient manner. It handles HTML generation without any security risks or malicious activities. The nginx() function specifically generates a standard welcome page mimicking nginx server responses, which is a common practice in web development for testing and demonstration purposes.
-async function nginx() {
-    return `
-	<!DOCTYPE html>
-	<html>
-	<head>
-	<title>Welcome to nginx!</title>
-	<style>
-		body {
-			width: 35em;
-			margin: 0 auto;
-			font-family: Tahoma, Verdana, Arial, sans-serif;
-		}
-	</style>
-	</head>
-	<body>
-	<h1>Welcome to nginx!</h1>
-	<p>If you see this page, the nginx web server is successfully installed and
-	working. Further configuration is required.</p>
-
-	<p>For online documentation and support please refer to
-	<a href="http://nginx.org/">nginx.org</a>.<br/>
-	Commercial support is available at
-	<a href="http://nginx.com/">nginx.com</a>.</p>
-
-	<p><em>Thank you for using nginx.</em></p>
-	</body>
-	</html>
-	`
+async function nginx(env, request) {
+    try {
+        const assetBinding = env.ASSETS;
+        if (assetBinding && typeof assetBinding.fetch === 'function') {
+            // 构造请求根目录 index.html 的 Request 对象
+            const assetUrl = new URL('/index.html', request.url);
+            const assetRequest = new Request(assetUrl, {
+                method: 'GET',
+                headers: request.headers
+            });
+            
+            const response = await assetBinding.fetch(assetRequest);
+            if (response.ok) {
+                const headers = new Headers(response.headers);
+                headers.set('Content-Type', 'text/html; charset=UTF-8');
+                // 返回绑定的 index.html
+                return new Response(response.body, {
+                    status: 200,
+                    statusText: 'OK',
+                    headers: headers
+                });
+            }
+        }
+    } catch (e) {
+        console.error('Failed to fetch index.html from assets:', e);
+    }
+    
+    // 如果未配置 asset 绑定或读取失败，返回 404 防止报错
+    return new Response('404 Not Found', {
+        status: 404,
+        headers: {
+            'Content-Type': 'text/plain; charset=UTF-8'
+        }
+    });
 }
 
 async function html1101(host, 访问IP) {
