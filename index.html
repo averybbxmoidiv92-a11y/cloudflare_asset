@@ -250,7 +250,7 @@
             to { transform: rotate(360deg); }
         }
 
-        .santa-hat-container {
+        .birthday-hat-container {
             position: absolute;
             z-index: 3;
             display: none;
@@ -258,16 +258,16 @@
             transform: scale(0);
             opacity: 1;
         }
-        .santa-hat-container img {
+        .birthday-hat-container img {
             max-width: 100%;
             height: auto;
             display: block;
         }
         
-        .santa-hat-container.growing {
-            animation: santa-hat-grow 1.4s forwards;
+        .birthday-hat-container.growing {
+            animation: birthday-hat-grow 1.4s forwards;
         }
-        @keyframes santa-hat-grow {
+        @keyframes birthday-hat-grow {
             0% { transform: scale(0); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
             7.14% { transform: scale(0.12); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
             14.28% { transform: scale(0.25); animation-timing-function: cubic-bezier(0.42, 0, 1, 1); }
@@ -804,8 +804,8 @@
                 <div class="avatar-container">
                     <div class="avatar-ring"></div>
                     <a href="https://qm.qq.com/q/i6aty7fzag" target="_blank" rel="noopener noreferrer" class="avatar" id="avatar" title="点击添加QQ">W</a>
-                    <div class="santa-hat-container" id="santaHatContainer">
-                        <img src="https://althgot.de5.net/static/santa_hat.png" alt="圣诞帽">
+                    <div class="birthday-hat-container" id="birthdayHatContainer">
+                        <img src="https://althgot.de5.net/static/birthday_hat.png" alt="生日帽">
                     </div>
                 </div>
                 <h1 class="name">WendySG</h1>
@@ -1306,7 +1306,7 @@
                 }, 1800);
             }
 
-            // ========== 圣诞帽逻辑与彩带特效 ==========
+            // ========== 生日帽逻辑与彩带特效 ==========
             function shouldShowHat() {
                 if (BIRTHDAY_DATE === "always") return true;
                 const today = new Date();
@@ -1317,14 +1317,14 @@
 
             let hatAnimationStarted = false;
 
-            function updateSantaHatStyle() {
+            function updateBirthdayHatStyle() {
                 if (!shouldShowHat()) return;
-                const hatContainer = document.getElementById('santaHatContainer');
+                const hatContainer = document.getElementById('birthdayHatContainer');
                 if (!hatContainer || !avatarEl) return;
 
                 const avatarWidth = avatarEl.offsetWidth;
                 if (avatarWidth === 0) {
-                    requestAnimationFrame(updateSantaHatStyle);
+                    requestAnimationFrame(updateBirthdayHatStyle);
                     return;
                 }
 
@@ -1337,7 +1337,7 @@
             }
 
             function createConfetti() {
-                const hatContainer = document.getElementById('santaHatContainer');
+                const hatContainer = document.getElementById('birthdayHatContainer');
                 if (!hatContainer) return;
 
                 const confettiWrapper = document.createElement('div');
@@ -1376,12 +1376,12 @@
                 }, 500);
             }
 
-            function initSantaHat() {
+            function initBirthdayHat() {
                 if (!shouldShowHat()) return;
-                const hatContainer = document.getElementById('santaHatContainer');
+                const hatContainer = document.getElementById('birthdayHatContainer');
                 if (!hatContainer) return;
 
-                updateSantaHatStyle();
+                updateBirthdayHatStyle();
 
                 if (!hatAnimationStarted) {
                     hatAnimationStarted = true;
@@ -1415,11 +1415,11 @@
 
             window.addEventListener('resize', function() {
                 if (shouldShowHat()) {
-                    updateSantaHatStyle();
+                    updateBirthdayHatStyle();
                 }
             });
 
-            initSantaHat();
+            initBirthdayHat();
         })();
     </script>
 </body>
