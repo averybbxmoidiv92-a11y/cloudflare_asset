@@ -115,7 +115,7 @@
             box-shadow: var(--shadow-lg);
             text-align: center;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             width: 100%;
@@ -246,8 +246,12 @@
             pointer-events: none;
         }
         @keyframes rotate-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .birthday-hat-container {
@@ -263,15 +267,26 @@
             height: auto;
             display: block;
         }
-        
+
         .birthday-hat-container.growing {
             animation: birthday-hat-grow 1.4s forwards;
         }
         @keyframes birthday-hat-grow {
-            0% { transform: scale(0); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
-            7.14% { transform: scale(0.12); animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
-            14.28% { transform: scale(0.25); animation-timing-function: cubic-bezier(0.42, 0, 1, 1); }
-            100% { transform: scale(1.2); }
+            0% {
+                transform: scale(0);
+                animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+            }
+            7.14% {
+                transform: scale(0.12);
+                animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+            }
+            14.28% {
+                transform: scale(0.25);
+                animation-timing-function: cubic-bezier(0.42, 0, 1, 1);
+            }
+            100% {
+                transform: scale(1.2);
+            }
         }
 
         .confetti-container {
@@ -305,6 +320,64 @@
                 opacity: 0;
                 transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty) + 30px)) rotate(var(--rot)) scale(0.3);
             }
+        }
+
+        /* ========== 日期气泡样式 ========== */
+        .date-bubble {
+            position: absolute;
+            top: 50%;
+            left: calc(100% + 12px);
+            transform: translateY(-50%) scale(1);
+            width: 150px;
+            height: 150px;
+            background-image: url('https://althgot.de5.net/static/message_bubble.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: none;
+            z-index: 2;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .date-bubble.bubble-visible {
+            display: block;
+        }
+
+        .date-bubble.bubble-animate {
+            animation: bubble-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes bubble-pop {
+            0% {
+                transform: translateY(calc(-50% - 20px)) scale(0.8);
+            }
+            55% {
+                transform: translateY(-50%) scale(1.05);
+            }
+            100% {
+                transform: translateY(-50%) scale(1);
+            }
+        }
+
+        .date-bubble-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-all;
+            padding: 18px 16px;
+            box-sizing: border-box;
+            overflow: hidden;
+            line-height: 1.5;
+            text-align: center;
+            color: #3d3226;
+            font-weight: 500;
         }
 
         .name {
@@ -736,6 +809,14 @@
                 height: 36px;
                 background-size: 9px 9px;
             }
+            .date-bubble {
+                width: 130px;
+                height: 130px;
+                left: calc(100% + 8px);
+            }
+            .date-bubble-text {
+                padding: 15px 13px;
+            }
         }
 
         @media (max-width: 360px) {
@@ -788,6 +869,14 @@
                 width: 16px;
                 height: 16px;
             }
+            .date-bubble {
+                width: 115px;
+                height: 115px;
+                left: calc(100% + 6px);
+            }
+            .date-bubble-text {
+                padding: 12px 10px;
+            }
         }
     </style>
 </head>
@@ -801,11 +890,14 @@
     <div class="card-wrapper">
         <div class="card-flipper" id="cardFlipper">
             <div class="card-face card-front" id="cardFront">
-                <div class="avatar-container">
+                <div class="avatar-container" id="avatarContainer">
                     <div class="avatar-ring"></div>
                     <a href="https://qm.qq.com/q/i6aty7fzag" target="_blank" rel="noopener noreferrer" class="avatar" id="avatar" title="点击添加QQ">W</a>
                     <div class="birthday-hat-container" id="birthdayHatContainer">
                         <img src="https://althgot.de5.net/static/birthday_hat.png" alt="生日帽">
+                    </div>
+                    <div class="date-bubble" id="dateBubble">
+                        <div class="date-bubble-text" id="dateBubbleText"></div>
                     </div>
                 </div>
                 <h1 class="name">WendySG</h1>
@@ -899,6 +991,320 @@
     <script>
         (function() {
             const BIRTHDAY_DATE = "07-22";
+
+            const dateMessageMap = [
+                { date: "01-01", text: "今天是元旦，新年快乐，新年新气象" },
+                { date: "01-06", text: "今天是小寒，一年中最冷的日子要来了" },
+                { date: "01-20", text: "今天是大寒，离春天不远了，可是今天冷飕飕的" },
+                { date: "02-04", text: "今天是立春，春回大地，万物复苏" },
+                { date: "02-14", text: "今天是情人节，资本之节" },
+                { date: "02-19", text: "今天是雨水，东风解冻，散而为雨" },
+                { date: "03-05", text: "今天是惊蛰，春雷始鸣，万物生长" },
+                { date: "03-08", text: "今天是妇女节，致敬每一位闪闪发光的她" },
+                { date: "03-12", text: "今天是植树节，为地球添一抹绿" },
+                { date: "03-15", text: "今天是消费者权益日，守护诚信消费" },
+                { date: "03-20", text: "今天是春分，昼夜等长，踏青好时节" },
+                { date: "03-21", text: "今天是世界睡眠日，早睡早起身体好" },
+                { date: "03-22", text: "今天是世界水日，节约用水，点滴做起" },
+                { date: "04-01", text: "今天是愚人节，小心被整蛊哦" },
+                { date: "04-05", text: "今天是清明节，既要缅怀先人，也要好好休息" },
+                { date: "04-07", text: "今天是世界卫生日，你注意好卫生了吗" },
+                { date: "04-22", text: "今天是世界地球日，关爱地球，守护家园" },
+                { date: "04-23", text: "今天是世界读书日，静下心，读一本有趣的书" },
+                { date: "05-01", text: "今天是劳动节，劳动是最光荣的事～，但心里仍然想着放假😋" },
+                { date: "05-04", text: "今天是五四青年节，青春正当时" },
+                { date: "05-05", text: "今天是立夏，到夏天了，天气逐渐变热，要注意防暑降温呀" },
+                { date: "05-08", text: "今天是世界红十字日，博爱奉献" },
+                { date: "05-12", text: "今天是国际护士节，感谢白衣天使" },
+                { date: "05-15", text: "今天是国际家庭日，家是最温暖的港湾" },
+                { date: "05-18", text: "今天是国际博物馆日，去感受历史的魅力吧" },
+                { date: "05-21", text: "今天是小满，物至于此小得盈满" },
+                { date: "05-31", text: "今天是世界无烟日，拒绝烟草，健康生活" },
+                { date: "06-01", text: "今天是儿童节，虽然已经长大成人，但内心仍是童真小孩呢" },
+                { date: "06-05", text: "今天是世界环境日，保护好周遭环境，有利于人类发展" },
+                { date: "06-06", text: "今天是芒种，忙着种下希望" },
+                { date: "06-14", text: "今天是世界献血者日，感谢无私奉献者" },
+                { date: "06-19", text: "今天是端午节，又可以吃粽子放假了" },
+                { date: "06-21", text: "今天是夏至，一年中白昼最长的一天，记得吃面" },
+                { date: "06-23", text: "今天是国际奥林匹克日，脑子动起来，咱也不落后！" },
+                { date: "06-26", text: "今天是国际禁毒日，为禁毒警察致敬" },
+                { date: "07-01", text: "今天是建党节，中国共产党建党纪念日" },
+                { date: "07-07", text: "今天是发生七七事变的日子，中华民族进行全民族抗战的起点" },
+                { date: "07-22", text: "今天是我生日呀，祝自己生日快乐" },
+                { date: "07-23", text: "今天是大暑，又变热了呢" },
+                { date: "08-01", text: "今天是建军节，各地都在响防空警报" },
+                { date: "08-07", text: "今天是立秋，奶茶就算了..." },
+                { date: "08-08", text: "今天是全民健身日，身子骨也要硬朗才行" },
+                { date: "08-13", text: "今天是国际左撇子日，左撇子们节日快乐呀" },
+                { date: "08-15", text: "今天是日本无条件投降纪念日，铭记历史，珍爱和平" },
+                { date: "08-23", text: "今天是处暑，暑气渐消，秋意初显" },
+                { date: "09-07", text: "今天是白露，蒹葭苍苍，白露为霜" },
+                { date: "09-10", text: "今天是教师节，师恩难忘" },
+                { date: "09-18", text: "今天是九一八事变纪念日，勿忘国耻，警钟长鸣" },
+                { date: "09-21", text: "今天是国际和平日，愿世界和平" },
+                { date: "09-23", text: "今天是秋分，平分秋色，丰收时节" },
+                { date: "09-28", text: "今天是孔子诞辰" },
+                { date: "09-30", text: "今天是烈士纪念日，缅怀先烈，致敬英雄" },
+                { date: "10-01", text: "今天是国庆节快乐，国庆7天乐，想好去哪玩了吗" },
+                { date: "10-04", text: "今天是世界动物日，爱护动物，善待生命" },
+                { date: "10-08", text: "今天是寒露至，秋意浓，记得添衣" },
+                { date: "10-10", text: "今天是辛亥革命纪念日，驱除鞑虏，恢复中华" },
+                { date: "10-16", text: "今天是世界粮食日，珍惜粮食，拒绝浪费" },
+                { date: "10-23", text: "今天是霜降，秋天最后一个节气，注意保暖" },
+                { date: "10-31", text: "今天是万圣节，今天也要洋气十足" },
+                { date: "11-07", text: "今天是立冬，冬天的开始，天气也渐渐寒冷了" },
+                { date: "11-08", text: "今天是中国记者节，又是平凡的一天" },
+                { date: "11-11", text: "今天是双十一，购物狂欢节，想买的都买起来吧" },
+                { date: "11-22", text: "今天是小雪，天渐寒，雪渐盛" },
+                { date: "12-01", text: "今天是世界艾滋病日，防艾不防爱" },
+                { date: "12-03", text: "今天是国际残疾人日，关爱残疾人，平等共享" },
+                { date: "12-07", text: "今天是大雪，瑞雪兆丰年" },
+                { date: "12-13", text: "今天是南京大屠杀死难者国家公祭日，勿忘国殇，吾辈自强" },
+                { date: "12-22", text: "今天是冬至，吃热乎的饺子才不会冻耳朵呀" },
+                { date: "12-24", text: "今天是平安夜，愿平安喜乐" },
+                { date: "12-25", text: "今天是圣诞节，Merry Christmas! 🎅" }
+            ];
+
+            // 确保映射表按日期升序排列
+            dateMessageMap.sort(function(a, b) {
+                return a.date.localeCompare(b.date);
+            });
+
+            // ========== 日期气泡相关常量 ==========
+            const BUBBLE_BG_URL = 'https://althgot.de5.net/static/message_bubble.png';
+            const BUBBLE_WIDTH = 150; // 桌面端默认宽度
+            const BUBBLE_HEIGHT = 140; // 桌面端默认高度
+            const BASE_FONT_SIZE = 11;
+            const BASE_CHARS_PER_LINE = 12; // 16px字号下每行约12个中文字符
+            const LINE_HEIGHT_RATIO = 1.5;
+            const MIN_FONT_SIZE = 10;
+            const BUBBLE_PADDING_H = 16; // 左右padding
+            const BUBBLE_PADDING_V = 18; // 上下padding
+
+            // ========== 获取当前日期气泡的宽高（考虑响应式） ==========
+            function getBubbleDimensions() {
+                const bubble = document.getElementById('dateBubble');
+                if (bubble && bubble.offsetWidth > 0) {
+                    return { width: bubble.offsetWidth, height: bubble.offsetHeight };
+                }
+                // 回退：根据视口宽度估算
+                if (window.innerWidth <= 360) {
+                    return { width: 115, height: 115 };
+                } else if (window.innerWidth <= 480) {
+                    return { width: 130, height: 130 };
+                }
+                return { width: BUBBLE_WIDTH, height: BUBBLE_HEIGHT };
+            }
+
+            // ========== 字符宽度判断 ==========
+            function getCharWeight(ch) {
+                const code = ch.codePointAt(0);
+                if (code === undefined) return 0.5;
+                // 全角字符范围
+                if ((code >= 0x4E00 && code <= 0x9FFF) || // CJK统一表意文字
+                    (code >= 0x3000 && code <= 0x303F) || // CJK标点符号
+                    (code >= 0xFF00 && code <= 0xFFEF) || // 全角ASCII、全角标点
+                    (code >= 0x3040 && code <= 0x30FF) || // 平假名、片假名
+                    (code >= 0xAC00 && code <= 0xD7AF) || // 韩文
+                    (code >= 0x2000 && code <= 0x206F) || // 通用标点
+                    code > 0xFFFF) { // emoji及补充字符
+                    return 1;
+                }
+                return 0.5;
+            }
+
+            // ========== 计算折算字符总数 ==========
+            function countWeightedChars(text) {
+                let total = 0;
+                for (const ch of text) {
+                    total += getCharWeight(ch);
+                }
+                return total;
+            }
+
+            // ========== 获取气泡内可用宽度 ==========
+            function getAvailableWidth(bubbleWidth) {
+                return Math.max(bubbleWidth - BUBBLE_PADDING_H * 2, 60);
+            }
+
+            // ========== 获取气泡内可用高度 ==========
+            function getAvailableHeight(bubbleHeight) {
+                return Math.max(bubbleHeight - BUBBLE_PADDING_V * 2, 60);
+            }
+
+            // ========== 动态计算字号与显示文案 ==========
+            function calculateFontSizeAndText(text, bubbleWidth, bubbleHeight) {
+                const availWidth = getAvailableWidth(bubbleWidth);
+                const availHeight = getAvailableHeight(bubbleHeight);
+                const totalWeightedChars = countWeightedChars(text);
+
+                let fontSize = BASE_FONT_SIZE;
+
+                while (fontSize >= MIN_FONT_SIZE) {
+                    // 当前字号下每行可容纳的折算字符数
+                    const charsPerLine = BASE_CHARS_PER_LINE * (BASE_FONT_SIZE / fontSize) * (availWidth / (BUBBLE_WIDTH - BUBBLE_PADDING_H * 2));
+                    const lines = Math.max(1, Math.ceil(totalWeightedChars / charsPerLine));
+                    const lineHeight = fontSize * LINE_HEIGHT_RATIO;
+                    const totalHeight = lines * lineHeight;
+
+                    if (lines <= 2 || totalHeight <= availHeight) {
+                        return { text: text, fontSize: fontSize, needsTruncation: false };
+                    }
+                    fontSize -= 1;
+                }
+
+                // fontSize = MIN_FONT_SIZE 时仍放不下，需要截断
+                const charsPerLineMin = BASE_CHARS_PER_LINE * (BASE_FONT_SIZE / MIN_FONT_SIZE) * (availWidth / (BUBBLE_WIDTH - BUBBLE_PADDING_H * 2));
+                const maxLinesMin = Math.floor(availHeight / (MIN_FONT_SIZE * LINE_HEIGHT_RATIO));
+                const maxWeightedChars = Math.floor(charsPerLineMin * maxLinesMin) - 1.5; // 给省略号留空间
+
+                if (maxWeightedChars <= 0) {
+                    return { text: '…', fontSize: MIN_FONT_SIZE, needsTruncation: true };
+                }
+
+                // 从开头截断文本
+                let accumulated = 0;
+                let cutIndex = 0;
+                for (let i = 0; i < text.length; i++) {
+                    const w = getCharWeight(text[i]);
+                    if (accumulated + w > maxWeightedChars) {
+                        cutIndex = i;
+                        break;
+                    }
+                    accumulated += w;
+                    cutIndex = i + 1;
+                }
+                if (cutIndex === 0) cutIndex = 1;
+                const truncatedText = text.substring(0, cutIndex) + '…';
+                return { text: truncatedText, fontSize: MIN_FONT_SIZE, needsTruncation: true };
+            }
+
+            // ========== 获取当前日期对应的文案 ==========
+            function getDateMessage() {
+                const today = new Date();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const dateKey = month + '-' + day;
+
+
+                // 在映射表中查找
+                for (let i = 0; i < dateMessageMap.length; i++) {
+                    if (dateMessageMap[i].date === dateKey) {
+                        return dateMessageMap[i].text;
+                    }
+                }
+                // 默认文案
+                return '今天是 ' + dateKey + '，今天也要开开心心的过呀';
+            }
+
+            // ========== 更新气泡文案与样式 ==========
+            function updateBubbleDisplay() {
+                const bubble = document.getElementById('dateBubble');
+                const bubbleText = document.getElementById('dateBubbleText');
+                if (!bubble || !bubbleText) return;
+                if (!bubble.classList.contains('bubble-visible')) return;
+
+                const message = getDateMessage();
+                const dims = getBubbleDimensions();
+                const result = calculateFontSizeAndText(message, dims.width, dims.height);
+
+                bubbleText.textContent = result.text;
+                bubbleText.style.fontSize = result.fontSize + 'px';
+                bubbleText.style.lineHeight = LINE_HEIGHT_RATIO;
+            }
+
+            // ========== 预加载气泡背景图片并初始化 ==========
+            function initDateBubble() {
+                const bubble = document.getElementById('dateBubble');
+                const bubbleText = document.getElementById('dateBubbleText');
+                if (!bubble || !bubbleText) return;
+
+                const testImg = new Image();
+                const timeout = setTimeout(function() {
+                    testImg.src = '';
+                    bubble.style.display = 'none';
+                    bubble.classList.remove('bubble-visible', 'bubble-animate');
+                }, 5000);
+
+                testImg.onload = function() {
+                    clearTimeout(timeout);
+                    // 图片加载成功，设置文案并显示气泡
+                    const message = getDateMessage();
+                    const dims = getBubbleDimensions();
+                    const result = calculateFontSizeAndText(message, dims.width, dims.height);
+
+                    bubbleText.textContent = result.text;
+                    bubbleText.style.fontSize = result.fontSize + 'px';
+                    bubbleText.style.lineHeight = LINE_HEIGHT_RATIO;
+
+                    // 显示气泡
+                    bubble.style.display = 'block';
+                    bubble.classList.add('bubble-visible');
+
+                    // 触发弹性动画
+                    void bubble.offsetWidth;
+                    bubble.classList.add('bubble-animate');
+
+                    // 动画结束后清理动画类（保留最终状态）
+                    bubble.addEventListener('animationend', function handler(e) {
+                        if (e.animationName === 'bubble-pop') {
+                            bubble.classList.remove('bubble-animate');
+                            bubble.removeEventListener('animationend', handler);
+                        }
+                    });
+                };
+
+                testImg.onerror = function() {
+                    clearTimeout(timeout);
+                    // 图片加载失败，隐藏气泡
+                    bubble.style.display = 'none';
+                    bubble.classList.remove('bubble-visible', 'bubble-animate');
+                    bubbleText.textContent = '';
+                };
+
+                testImg.src = BUBBLE_BG_URL;
+            }
+
+            // ========== 每日零点文案更新调度 ==========
+            let midnightTimer = null;
+
+            function scheduleMidnightUpdate() {
+                if (midnightTimer) {
+                    clearTimeout(midnightTimer);
+                    midnightTimer = null;
+                }
+
+                const now = new Date();
+                const midnight = new Date(now);
+                midnight.setHours(24, 0, 0, 0);
+                const msUntilMidnight = midnight - now;
+
+                // 添加一个小的安全边距（100ms），确保在零点之后触发
+                const delay = Math.max(msUntilMidnight + 100, 1000);
+
+                midnightTimer = setTimeout(function() {
+                    updateBubbleDisplay();
+                    scheduleMidnightUpdate(); // 递归调度下一次
+                }, delay);
+            }
+
+            // ========== 响应式处理：窗口大小变化时更新气泡 ==========
+            let resizeDebounceTimer = null;
+
+            function handleResize() {
+                if (resizeDebounceTimer) {
+                    clearTimeout(resizeDebounceTimer);
+                }
+                resizeDebounceTimer = setTimeout(function() {
+                    updateBubbleDisplay();
+                }, 250);
+            }
+
+            window.addEventListener('resize', handleResize);
+
+            // ========== 初始化日期气泡 ==========
+            initDateBubble();
+            scheduleMidnightUpdate();
 
             // ========== 头像加载逻辑 ==========
             const avatarEl = document.getElementById('avatar');
@@ -1017,82 +1423,56 @@
             const cardBack = document.getElementById('cardBack');
 
             // 长按旋转配置常量
-            const LONG_PRESS_THRESHOLD = 200;  // 长按判定阈值
-            const ROTATION_SPEED = 900;        // 角速度
-            const SNAP_DURATION = 300;         // 吸附动画时长
+            const LONG_PRESS_THRESHOLD = 200;
+            const ROTATION_SPEED = 900;
+            const SNAP_DURATION = 300;
 
-            // 旋转状态变量
-            let isPressing = false;       // 按钮是否被按下
-            let isRotating = false;       // 是否处于持续旋转模式
-            let isSnapping = false;       // 是否处于吸附动画中
-            let wasLongPress = false;     // 本次按下是否触发了长按
-            let longPressTimer = null;    // 长按判定计时器
-            let rotationAngle = 0;        // 当前旋转角度（累计值）
-            let rotationDirection = 1;    // 旋转方向：1=顺时针，-1=逆时针
-            let animationFrame = null;    // requestAnimationFrame 句柄
-            let lastFrameTime = 0;        // 上一帧时间戳
+            let isPressing = false;
+            let isRotating = false;
+            let isSnapping = false;
+            let wasLongPress = false;
+            let longPressTimer = null;
+            let rotationAngle = 0;
+            let rotationDirection = 1;
+            let animationFrame = null;
+            let lastFrameTime = 0;
 
-            // 原有单次翻转功能
             function toggleFlip() {
                 cardFlipper.classList.toggle('flipped');
             }
 
             function startRotation() {
                 isRotating = true;
-
-                // 方向判定：背面→逆时针(-1)，正面→顺时针(+1)
-                // 仅在长按启动瞬间根据当前卡片状态确定一次
                 rotationDirection = cardFlipper.classList.contains('flipped') ? -1 : 1;
-
-                // 设置初始角度（基于当前卡片面）
                 rotationAngle = cardFlipper.classList.contains('flipped') ? 180 : 0;
-
-                // 移除 flipped 类，通过内联 transform 接管旋转控制
                 cardFlipper.classList.remove('flipped');
-
-                // 禁用 CSS 过渡，实现匀速自由旋转
                 cardFlipper.style.transition = 'none';
                 cardFlipper.style.transform = 'rotateY(' + rotationAngle + 'deg)';
-
                 lastFrameTime = performance.now();
                 animationFrame = requestAnimationFrame(rotateStep);
             }
 
-            // ========== 旋转动画帧回调 ==========
             function rotateStep(now) {
                 if (!isRotating) return;
-
-                const dt = (now - lastFrameTime) / 1000; // 经过的秒数
+                const dt = (now - lastFrameTime) / 1000;
                 lastFrameTime = now;
-
-                // 按恒定角速度累加角度
                 rotationAngle += rotationDirection * ROTATION_SPEED * dt;
-
                 cardFlipper.style.transform = 'rotateY(' + rotationAngle + 'deg)';
-
                 animationFrame = requestAnimationFrame(rotateStep);
             }
 
-            // ========== 吸附至最近的完整面 ==========
             function snapToFace() {
                 isRotating = false;
                 isSnapping = true;
-
                 if (animationFrame) {
                     cancelAnimationFrame(animationFrame);
                     animationFrame = null;
                 }
-
-                // 找到最近的 180° 倍数
                 let nearest180 = Math.round(rotationAngle / 180) * 180;
                 let diff = rotationAngle - nearest180;
-
-                // 等距情况（当前角度恰好距两个完整面各 90°）：统一吸附至正面（0° 的倍数）
                 if (Math.abs(Math.abs(diff) - 90) < 0.5) {
                     nearest180 = Math.round(rotationAngle / 360) * 360;
                 }
-
-                // 若已处于目标角度，不播放过渡动画，直接保持静止
                 if (Math.abs(nearest180 - rotationAngle) < 0.5) {
                     syncFlippedClass(nearest180);
                     cardFlipper.style.transition = '';
@@ -1100,24 +1480,17 @@
                     isSnapping = false;
                     return;
                 }
-
-                // 启用 0.3s ease-out 缓出过渡
                 cardFlipper.style.transition = 'transform 0.3s ease-out';
-                // 强制重排，确保过渡从当前角度生效
                 void cardFlipper.offsetWidth;
                 cardFlipper.style.transform = 'rotateY(' + nearest180 + 'deg)';
-
-                // 过渡结束后同步 flipped 类状态
                 setTimeout(function() {
                     syncFlippedClass(nearest180);
-                    // 清除内联样式，交由 CSS 类接管
                     cardFlipper.style.transition = '';
                     cardFlipper.style.transform = '';
                     isSnapping = false;
                 }, SNAP_DURATION);
             }
 
-            // 根据最终角度同步 flipped 类状态
             function syncFlippedClass(angle) {
                 var finalMod = ((angle % 360) + 360) % 360;
                 if (Math.abs(finalMod - 180) < 0.5) {
@@ -1127,75 +1500,52 @@
                 }
             }
 
-            // ========== 按下处理 ==========
             function startPress() {
-                // 旋转中或吸附中或已按下时，忽略新的按下事件
                 if (isPressing || isRotating || isSnapping) return;
-
                 isPressing = true;
                 wasLongPress = false;
                 flipBtn.classList.add('is-pressing');
-
-                // 200ms 后触发长按旋转
                 longPressTimer = setTimeout(function() {
                     wasLongPress = true;
                     startRotation();
                 }, LONG_PRESS_THRESHOLD);
             }
 
-            // ========== 松开处理 ==========
             function endPress() {
                 if (!isPressing) return null;
-
                 isPressing = false;
                 flipBtn.classList.remove('is-pressing');
-
                 if (longPressTimer) {
                     clearTimeout(longPressTimer);
                     longPressTimer = null;
                 }
-
                 var wasRotating = isRotating;
-
                 if (isRotating) {
                     snapToFace();
                 }
-
                 return { wasRotating: wasRotating, wasLongPress: wasLongPress };
             }
 
-            // ========== 绑定翻转按钮事件 ==========
             if (flipBtn) {
-                // 鼠标按下
                 flipBtn.addEventListener('mousedown', function(e) {
-                    if (e.button !== 0) return; // 仅响应左键
+                    if (e.button !== 0) return;
                     startPress();
                 });
-
-                // 触摸开始
                 flipBtn.addEventListener('touchstart', function(e) {
-                    e.preventDefault(); // 阻止鼠标事件模拟和默认滚动
+                    e.preventDefault();
                     startPress();
                 }, { passive: false });
-
-                // 触摸结束
                 flipBtn.addEventListener('touchend', function(e) {
                     e.preventDefault();
                     var result = endPress();
-                    // 短按（未旋转且未长按）时执行翻转
                     if (result && !result.wasRotating && !result.wasLongPress) {
                         toggleFlip();
                     }
-                    // 重置标志，防止后续可能的鼠标 click 误判
                     wasLongPress = false;
                 }, { passive: false });
-
-                // 触摸取消（如手指移出触摸区域）
                 flipBtn.addEventListener('touchcancel', function() {
                     endPress();
                 });
-
-                // 鼠标点击（短按翻转，长按不翻转）
                 flipBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     if (wasLongPress || isRotating || isSnapping) {
@@ -1206,22 +1556,18 @@
                 });
             }
 
-            // 鼠标松开监听在 document 上，处理鼠标移出按钮后释放的情况
             document.addEventListener('mouseup', function() {
                 endPress();
             });
 
-            // 页面失去焦点时视为松手，执行吸附
             window.addEventListener('blur', function() {
                 endPress();
             });
 
-            // ========== 卡片正面/背面点击翻转（旋转期间不响应） ==========
             if (cardFront && cardFlipper) {
                 cardFront.addEventListener('click', function(e) {
-                    // 按钮按住期间不响应卡片翻转
                     if (isPressing || isRotating || isSnapping) return;
-                    if (e.target.closest('.contact-item') || e.target.closest('.avatar')) {
+                    if (e.target.closest('.contact-item') || e.target.closest('.avatar') || e.target.closest('.date-bubble')) {
                         return;
                     }
                     toggleFlip();
@@ -1238,31 +1584,26 @@
                 });
             }
 
-            // 头像点击 - 阻止冒泡，保留默认跳转行为
             if (avatarEl) {
                 avatarEl.addEventListener('click', function(e) {
                     e.stopPropagation();
                 });
             }
 
-            // 校徽点击 - 阻止冒泡，保留默认跳转行为
             if (backLogoContainer) {
                 backLogoContainer.addEventListener('click', function(e) {
                     e.stopPropagation();
                 });
             }
 
-            // ========== 复制功能（与翻转互斥） ==========
+            // ========== 复制功能 ==========
             const contactItems = document.querySelectorAll('.contact-item');
-
             contactItems.forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const textToCopy = this.getAttribute('data-copy');
                     const toast = this.querySelector('.copy-toast');
-
                     if (!textToCopy) return;
-
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(textToCopy).then(() => {
                             showToast(toast);
@@ -1321,16 +1662,13 @@
                 if (!shouldShowHat()) return;
                 const hatContainer = document.getElementById('birthdayHatContainer');
                 if (!hatContainer || !avatarEl) return;
-
                 const avatarWidth = avatarEl.offsetWidth;
                 if (avatarWidth === 0) {
                     requestAnimationFrame(updateBirthdayHatStyle);
                     return;
                 }
-
                 const baseSize = 90;
                 const scaleRatio = avatarWidth / baseSize;
-                
                 hatContainer.style.top = `${-35 * scaleRatio}px`;
                 hatContainer.style.left = `${22 * scaleRatio}px`;
                 hatContainer.style.width = `${avatarWidth * 0.7}px`;
@@ -1339,36 +1677,27 @@
             function createConfetti() {
                 const hatContainer = document.getElementById('birthdayHatContainer');
                 if (!hatContainer) return;
-
                 const confettiWrapper = document.createElement('div');
                 confettiWrapper.className = 'confetti-container';
                 hatContainer.appendChild(confettiWrapper);
-
                 const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1', '#5f27cd', '#ee5253', '#54a0ff'];
                 const piecesCount = 25;
-
                 for (let i = 0; i < piecesCount; i++) {
                     const piece = document.createElement('div');
                     piece.className = 'confetti-piece';
-                    
                     piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                     piece.style.width = (4 + Math.random() * 4) + 'px';
                     piece.style.height = (8 + Math.random() * 6) + 'px';
-                    
                     const angle = Math.random() * Math.PI * 2;
-                    const velocity = 25 + Math.random() * 35; 
+                    const velocity = 25 + Math.random() * 35;
                     const tx = Math.cos(angle) * velocity;
                     const ty = Math.sin(angle) * velocity - 30;
-                    
-                    const rot = (Math.random() - 0.5) * 1080 + 'deg'; 
-                    
+                    const rot = (Math.random() - 0.5) * 1080 + 'deg';
                     piece.style.setProperty('--tx', tx + 'px');
                     piece.style.setProperty('--ty', ty + 'px');
                     piece.style.setProperty('--rot', rot);
-                    
                     confettiWrapper.appendChild(piece);
                 }
-
                 setTimeout(() => {
                     if (confettiWrapper.parentNode) {
                         confettiWrapper.parentNode.removeChild(confettiWrapper);
@@ -1380,28 +1709,20 @@
                 if (!shouldShowHat()) return;
                 const hatContainer = document.getElementById('birthdayHatContainer');
                 if (!hatContainer) return;
-
                 updateBirthdayHatStyle();
-
                 if (!hatAnimationStarted) {
                     hatAnimationStarted = true;
                     hatContainer.style.display = 'block';
-                    void hatContainer.offsetWidth; 
+                    void hatContainer.offsetWidth;
                     hatContainer.classList.add('growing');
-
                     setTimeout(() => {
                         const computedTransform = window.getComputedStyle(hatContainer).transform;
-                        
                         hatContainer.classList.remove('growing');
-                        
                         hatContainer.style.transition = 'none';
                         hatContainer.style.transform = computedTransform === 'none' ? 'scale(1.2)' : computedTransform;
-                        
                         void hatContainer.offsetWidth;
-                        
                         hatContainer.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
                         hatContainer.style.transform = 'scale(1)';
-
                         const onEnd = (e) => {
                             if (e.propertyName === 'transform') {
                                 hatContainer.removeEventListener('transitionend', onEnd);
@@ -1417,6 +1738,8 @@
                 if (shouldShowHat()) {
                     updateBirthdayHatStyle();
                 }
+                // 气泡位置通过CSS自动响应，但字号可能需要更新
+                // handleResize 已经处理了气泡更新
             });
 
             initBirthdayHat();
